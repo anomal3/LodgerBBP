@@ -94,6 +94,9 @@ namespace LodgerBBP
 
         }
 
+        /// <summary>
+        /// Возвращает имя класса для вызова функции
+        /// </summary>
         public string ClassName
         {
             get
