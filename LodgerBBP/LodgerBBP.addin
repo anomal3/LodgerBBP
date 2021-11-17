@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Command LodgerBBP</Text>
+    <Description>Some description for LodgerBBP</Description>
+    <Assembly>LodgerBBP.dll</Assembly>
+    <FullClassName>LodgerBBP.Command</FullClassName>
+    <ClientId>9a5d2c58-0b54-4ed2-898b-a34a628a9343</ClientId>
+    <VendorId>com.typepad.thebuildingcoder</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application LodgerBBP</Name>
+    <Assembly>LodgerBBP.dll</Assembly>
+    <FullClassName>LodgerBBP.App</FullClassName>
+    <ClientId>839c0d2e-5bde-4b63-a5a9-95a6172f99c6</ClientId>
+    <VendorId>com.typepad.thebuildingcoder</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>
