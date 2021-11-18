@@ -1,10 +1,12 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,6 +44,9 @@ namespace LodgerBBP
 
                         info += "\n\t" + id.IntegerValue;
                         ChangeSelection(uidoc);
+
+                        //Открываем таблицу и заносим все данные
+                        //TODO :
                     }
 
                     TaskDialog.Show("Revit", info);
@@ -64,32 +69,33 @@ namespace LodgerBBP
             ICollection<ElementId> selectedIds = uidoc.Selection.GetElementIds();
 
             // Отображаем текущее количество выбранных элементов
-            TaskDialog.Show("Revit", "Количество выбранных элементов: " + selectedIds.Count.ToString());
+            TaskDialog.Show("Lodger", $"Вы выбрали - {selectedIds.Count.ToString()} элементов");
 
-            // Пройдемся по выбранным элементам и отфильтруем только стены.
-            ICollection<ElementId> selectedWallIds = new List<ElementId>();
+            // Пройдемся по выбранным элементам и отфильтруем только комнаты[помещения].
+            ICollection<ElementId> selectedRoomIds = new List<ElementId>();
 
             foreach (ElementId id in selectedIds)
             {
                 Element elements = uidoc.Document.GetElement(id);
-                if (elements is Wall)
+                if (elements is Room)
                 {
-                    selectedWallIds.Add(id);
+
+                    selectedRoomIds.Add(id);
                 }
             }
 
             // Установить созданный набор элементов как текущий набор элементов выбора.
-            uidoc.Selection.SetElementIds(selectedWallIds);
+            uidoc.Selection.SetElementIds(selectedRoomIds);
 
 
             // Даем пользователю некоторую информацию.
-            if (0 != selectedWallIds.Count)
+            if (0 != selectedRoomIds.Count)
             {
-                TaskDialog.Show("Revit", selectedWallIds.Count.ToString() + " стен выбрано!");
+                TaskDialog.Show("Lodger", selectedRoomIds.Count.ToString() + " kомнат выбрано!");
             }
             else
             {
-                TaskDialog.Show("Revit", "Нет стен в выбранных элементах!");
+                TaskDialog.Show("Lodger", "В выбранных элементах нет комнат!", TaskDialogCommonButtons.Close);
             }
 
         }

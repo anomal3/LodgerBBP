@@ -7,11 +7,17 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Drawing.Imaging;
+using Autodesk.Revit.DB.Architecture;
+using System.Reflection;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 
 namespace LodgerBBP
 {
     public class Helper
     {
+
+        #region Простой конвертер изображений с перегрузкой метода в BtimapImage для отображения картинок на форме или для использования RevitAPIUI
         /// <summary>
         /// Конвертер из (по-умолчанию PNG) в BitMap
         /// </summary>
@@ -78,6 +84,9 @@ namespace LodgerBBP
             }
         }
 
+        #endregion
+
+        #region [enum] Нумерация формата картинок из ресурсов
         public enum FormatImageConverter
         {
             PNG = 0,
@@ -85,9 +94,10 @@ namespace LodgerBBP
             BMP = 2,
             GIF =3,
             TIFF = 4
-            
         }
+        #endregion
 
+        #region [enum] Нумерация для определения Нейминга [Имя, текст, подсказка, описание]
         public enum UINamingArray
         {
             NAME = 0,
@@ -95,8 +105,10 @@ namespace LodgerBBP
             TOOLTIP = 2,
             DISCRIPTION = 3
         }
+        #endregion
     }
 
+    #region Класс HelperNaming Наименование элементов [Имя, текст, описание и т.п.]
     /// <summary>
     /// Публичный класс для Нейминга переменных для RevitAPIUI
     /// </summary>
@@ -116,4 +128,56 @@ namespace LodgerBBP
             "Перед выбором данной фунции необходимо заранее выбрать помещения которые нужно занести в таблицу"
         };
     }
+    #endregion
+
+    #region Класс Data для передачи параметров любого типа
+    public static class Data
+    {
+        public static object obj { get; set; }
+        public static Document UIDOC { get; set; }
+        public static UIDocument ActiveUIDocument { get; set; }
+
+        #region Версия
+        public static Version AssemblyVers()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Version;
+        }
+
+        public static String Version()
+        {
+            return $" v.0.{AssemblyVers().Major} | Сборка {AssemblyVers().Build} | Ревизия {AssemblyVers().Revision}";
+        }
+        #endregion
+
+        public static ICollection<Element> CollectionElements { get; set; }
+
+    }
+    #endregion
+
+    #region Класс ExtensionHelperListView для обращения к форме RoomTable.xaml
+    class ExtensionHelperListView
+    {
+        public static RoomTable RoomTable_ { get; set; }
+
+        public void AddToList(string NameRoom, string strArea, double _ExactArea)
+        {
+            RoomTable_.c_LV.Items.Add(new RoomValue
+            {
+                Name = NameRoom,
+                Area = strArea,
+                ExactArea = _ExactArea
+            });
+        }
+
+        public void ClearItems()
+        {
+            RoomTable_.c_LV.Items.Clear();
+        }
+
+        public static void ChangeTitle(string message)
+        {
+            RoomTable_.Title = message;
+        }
+    }
+    #endregion
 }

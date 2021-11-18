@@ -12,46 +12,59 @@ using System.Diagnostics;
 
 namespace LodgerBBP
 {
-    [Transaction(TransactionMode.Manual)]
+    [TransactionAttribute(TransactionMode.Manual)]
+    [RegenerationAttribute(RegenerationOption.Manual)]
     public class Command : IExternalCommand
     {
-        public Result Execute(
-          ExternalCommandData commandData,
-          ref string message,
-          ElementSet elements)
+
+        public ICollection<Element> ICE;
+
+        public ICollection<Element> AR(ExternalCommandData commandData) //Возвращаемая колекция помещений
         {
-            UIApplication uiapp = commandData.Application;
-            UIDocument uidoc = uiapp.ActiveUIDocument;
-            Application app = uiapp.Application;
-            Document doc = uidoc.Document;
+            Document doc = commandData.Application.ActiveUIDocument.Document;
+            Data.UIDOC = doc;
+            FilteredElementCollector roomFilter = new FilteredElementCollector(doc);
+            ICollection<Element> allRooms = roomFilter.OfCategory(BuiltInCategory.OST_Rooms).WhereElementIsNotElementType().ToElements();
+            ICE = allRooms;
+            return allRooms;
+        }
 
-            // Access current selection
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            //UIApplication uiapp = commandData.Application;
+            //UIDocument uidoc = uiapp.ActiveUIDocument;
+            //Application app = uiapp.Application;
+            //Document doc = uidoc.Document;
 
-            Selection sel = uidoc.Selection;
+            //// Access current selection
 
-            // Retrieve elements from database
+            //Selection sel = uidoc.Selection;
 
-            FilteredElementCollector col
-              = new FilteredElementCollector(doc)
-                .WhereElementIsNotElementType()
-                .OfCategory(BuiltInCategory.INVALID)
-                .OfClass(typeof(Wall));
+            //// Retrieve elements from database
 
-            // Filtered element collector is iterable
+            //FilteredElementCollector col
+            //  = new FilteredElementCollector(doc)
+            //    .WhereElementIsNotElementType()
+            //    .OfCategory(BuiltInCategory.INVALID)
+            //    .OfClass(typeof(Wall));
 
-            foreach (Element e in col)
-            {
-                Debug.Print(e.Name);
-            }
+            //// Filtered element collector is iterable
 
-            // Modify document within a transaction
+            //foreach (Element e in col)
+            //{
+            //    Debug.Print(e.Name);
+            //}
 
-            using (Transaction tx = new Transaction(doc))
-            {
-                tx.Start("Transaction Name");
-                tx.Commit();
-            }
+            //// Modify document within a transaction
 
+            //using (Transaction tx = new Transaction(doc))
+            //{
+            //    tx.Start("Transaction Name");
+            //    tx.Commit();
+            //}
+
+            RoomTable uwr = new RoomTable(AR(commandData), false);
+            uwr.Show();
             return Result.Succeeded;
         }
     }
