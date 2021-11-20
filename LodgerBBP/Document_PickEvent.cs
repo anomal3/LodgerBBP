@@ -41,63 +41,130 @@ namespace LodgerBBP
                 tx.Start("DocumentPickEvent");
                 //===============================================//
                 // Action within valid Revit API context thread
-
-
-
                 List<ElementId> elemIdList = new List<ElementId>();
-
                 List<Element> elemList = new List<Element>();
-                try
-                {
 
-                    while (true)
+                #region Убираем бесконечный цикл и Try Catch
+                //try
+                //{
+
+                //while (true)
+                //{
+                #endregion
+
+                Selection sel = uidoc.Selection;
+                IList<Reference> objRefsToCopy = sel.PickObjects(ObjectType.Element, "Выберите помещения для добавления в коллекцию");
+                //XYZ basePoint = sel.PickPoint("Pick base point");
+
+                EHLV.ClearItems();
+
+                foreach (Reference r in objRefsToCopy)
+                {
+                    Element element2Ref = uidoc.Document.GetElement(r.ElementId);
+                    elemIdList.Add(r.ElementId);
+                    elemList.Add(element2Ref);
+                    
+                    if (objRefsToCopy.Count != 0)
                     {
-                        elemIdList.Add(uidoc.Selection.PickObject(ObjectType.Element, "Выберите помещения для добавления в коллекцию").ElementId);
-                        if (elemIdList != null & elemIdList.Count != 0)
-                        {
-                            EHLV.ClearItems();
-                            foreach (ElementId id in elemIdList)
-                            {
-                                Element elements = uidoc.Document.GetElement(id);
-                                elemList.Add(elements);
+                        Parameter par = element2Ref.get_Parameter(BuiltInParameter.ROOM_AREA);
+                        string strArea = par.AsValueString(/*Round*/);
+                        double varDouble = par.AsDouble();
+                        double ExactM2Area = varDouble / 10.7639111056;
+                        EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
 
-                                Parameter par = elements.get_Parameter(BuiltInParameter.ROOM_AREA);
-                                string strArea = par.AsValueString(/*Round*/);
-                                double varDouble = par.AsDouble();
-                                double ExactM2Area = varDouble / 10.7639111056;
-                                EHLV.AddToList(elements.Name, strArea, ExactM2Area);
-
-                                ActDP?.Invoke(this, new Document_PickEventArgs(elements.Name));
-                            }
-                        }
                     }
-                }
-                catch
-                {
-                    uidoc.Selection.SetElementIds(elemIdList);
 
-                    //TODO : В собитии передаём комнату
-
-                    var td = new TaskDialog("Info");                                    //Всплывающее окно
-                    //td.MainInstruction = uiapp.ActiveUIDocument.Selection.GetElementIds().Aggregate("", (ss, el) => ss + "," + el).TrimStart(','); // Выводит ID выбранных пом-ий
-                    td.MainInstruction = $" Добавлено {uiapp.ActiveUIDocument.Selection.GetElementIds().Count.ToString()} помещения!";
-                    td.TitleAutoPrefix = false;
-                    td.Show();
-
-
+                    //ActDP?.Invoke(this, new Document_PickEventArgs(element2Ref.Name));
                 }
 
+                uidoc.Selection.SetElementIds(elemIdList);
+                uidoc.ShowElements(elemIdList);
 
+                var td = new TaskDialog("Info");                                    //Всплывающее окно
+                //td.MainInstruction = uiapp.ActiveUIDocument.Selection.GetElementIds().Aggregate("", (ss, el) => ss + "," + el).TrimStart(','); // Выводит ID выбранных пом-ий
+                td.MainInstruction = $" Добавлено {objRefsToCopy.Count} помещения!";
+                td.TitleAutoPrefix = false;
+                td.Show();
 
-                uidoc.RefreshActiveView();
+               
+                #region Устаревший метод выбра
+                //elemIdList.Add(uidoc.Selection.PickObject(ObjectType.Element, "Выберите помещения для добавления в коллекцию").ElementId);
+                //if (elemIdList != null & elemIdList.Count != 0)
+                //{
+                //    EHLV.ClearItems();
+                //    foreach (ElementId id in elemIdList)
+                //    {
+                //        Element elements = uidoc.Document.GetElement(id);
+                //        elemList.Add(elements);
 
+                //        Parameter par = elements.get_Parameter(BuiltInParameter.ROOM_AREA);
+                //        string strArea = par.AsValueString(/*Round*/);
+                //        double varDouble = par.AsDouble();
+                //        double ExactM2Area = varDouble / 10.7639111056;
+                //        EHLV.AddToList(elements.Name, strArea, ExactM2Area);
+
+                //        ActDP?.Invoke(this, new Document_PickEventArgs(elements.Name));
+
+                //        uidoc.Selection.SetElementIds(elemIdList);
+                //        uidoc.RefreshActiveView();
+                //        doc.Regenerate();
+                //    }
+                //}
+
+                //}
+                //}
+                //catch
+                //{
+                //    uidoc.Selection.SetElementIds(elemIdList);
+
+                //    //TODO : В собитии передаём комнату
+
+                //    var td = new TaskDialog("Info");                                    //Всплывающее окно
+                //    //td.MainInstruction = uiapp.ActiveUIDocument.Selection.GetElementIds().Aggregate("", (ss, el) => ss + "," + el).TrimStart(','); // Выводит ID выбранных пом-ий
+                //    td.MainInstruction = $" Добавлено {uiapp.ActiveUIDocument.Selection.GetElementIds().Count.ToString()} помещения!";
+                //    td.TitleAutoPrefix = false;
+                //    td.Show();
+                //}
+                #endregion
+                //uidoc.RefreshActiveView();
                 //===============================================//
                 tx.Commit();
             }
         }
+
+        #region Смена цвета выбранного элемента [Не поддерживается]
+        public void ChangeElementColor(UIApplication uiapp)
+        {
+            Application app = uiapp.ActiveUIDocument.Application.Application;
+
+            UIDocument uidoc = uiapp.ActiveUIDocument;
+            Document doc = uidoc.Document;
+
+            Color color = app.Create.NewColor();
+            color.Blue = (byte)150;
+            color.Red = (byte)200;
+            color.Green = (byte)200;
+
+            Selection sel = uidoc.Selection;
+
+            Reference ref1 = sel.PickObject(ObjectType.Element, "Pick element to change its colour");
+
+            Element elem = uidoc.Document.GetElement(ref1.ElementId);
+
+            List<ElementId> ids = new List<ElementId>(1);
+            ids.Add(elem.Id);
+
+            Transaction trans = new Transaction(doc);
+            trans.Start("ChangeColor");
+
+            doc.ActiveView.SetElementOverrides(ids[0], new OverrideGraphicSettings());
+
+            trans.Commit();
+        }
+        #endregion
+
         public string GetName()
         {
-
             return "DocumentPickEvent";
         }
     }

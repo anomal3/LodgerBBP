@@ -40,6 +40,10 @@
     <StartProgram>$(ProgramW6432)\Autodesk\Revit 2022\Revit.exe</StartProgram>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AdWindows, Version=3.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>scr\AdWindows.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -83,6 +87,7 @@
     <None Include="Resources\s2_96.png" />
     <None Include="Resources\s2_add_96.png" />
     <None Include="Resources\add.png" />
+    <Content Include="scr\AdWindows.dll" />
     <Content Include="scr\RevitAPI.dll" />
     <Content Include="scr\RevitAPI.xml" />
     <Content Include="scr\RevitAPIUI.dll" />
