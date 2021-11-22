@@ -106,6 +106,7 @@ namespace LodgerBBP
             DISCRIPTION = 3
         }
         #endregion
+
     }
 
     #region Класс HelperNaming Наименование элементов [Имя, текст, описание и т.п.]

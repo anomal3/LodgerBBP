@@ -5,9 +5,11 @@ using Autodesk.Revit.UI.Selection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,6 +30,8 @@ namespace LodgerBBP
     /// </summary>
     public partial class RoomTable : Window
     {
+        private readonly ObservableCollection<RoomValue> rooms = new ObservableCollection<RoomValue>();
+
         ICollection<Element> allRooms;                                              //Переменная колекция помещений 
         /// <summary>
         /// Инициирует форму WPF
@@ -37,6 +41,7 @@ namespace LodgerBBP
         public RoomTable(ICollection<Element> elements, bool isFillRoom)
         {
             InitializeComponent();
+           
 
             allRooms = elements;
 
@@ -78,12 +83,12 @@ namespace LodgerBBP
            
 
             bSum.Click += BSum_Aera;                                                //Метод который суммирует выбранные помещения
-            c_LV.SelectionChanged += C_LV_SelectionChanged;                         //Метод который выполняется если выбираем элемент
+
 
             #region При инициализации формы
 
             //TaskDialog.Show("Area Calculator", "Вот это поворот", TaskDialogCommonButtons.Close, TaskDialogResult.Close);
-
+            int _ID = 0;
             foreach (var room in allRooms)                                          //Цикл перебора коллекций комнат
             {
                 Parameter par = room.get_Parameter(BuiltInParameter.ROOM_AREA);     //Объявляем параметр и указываем что будем брать (какой параметр) из комнат
@@ -94,58 +99,98 @@ namespace LodgerBBP
                 
                 if (isFillRoom)
                 {
-                    c_LV.Items.Add(new RoomValue                                        //Заносим в ListView наши полученные данные из комнат
+                    #region Новый метод добавления в коллекцию goto:c_LV.ItemsSource = rooms;
+                    rooms.Add(new RoomValue 
                     {
                         Name = room.Name,
                         Area = ExactM2Area,
-                        ExactArea = ExactM2Area
+                        ExactArea = ExactM2Area,
+                        TypeRoom = new string[] { "Без коэф.", "Балкон ^0.3", "Лоджия ^0.5" },
+                        ID = _ID++
                     });
+                    #endregion
+
+                    #region Устаревший и не правильный метод добавления элементов в ListView
+                    //c_LV.Items.Add(new RoomValue                                        //Заносим в ListView наши полученные данные из комнат
+                    //{
+                    //    Name = room.Name,
+                    //    Area = ExactM2Area,
+                    //    ExactArea = ExactM2Area,
+                    //    TypeRoom = new RoomValue().TypeRoom,
+                    //    Title = new RoomValue().Title
+                    //});
+                    #endregion
                 }
                 else
                 {
                     //Добавляем коллекцию комнат в List
 
                 }
-                
+                c_LV.ItemsSource = rooms;
             }
 
             #endregion
         }
 
-        private void C_LV_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        /// <summary>
+        /// Происходит при изменении ComboBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cbTypeRoom_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var comboBox = (ComboBox)e.OriginalSource; //Получаем тыкнутый мышкой ComboBox
+
+            var FocusItem = (FrameworkElement)e.OriginalSource; //Получаем элемент строки в зависимости на какой ComboBox мы тыкнули
+            var focusItem = (RoomValue)FocusItem.DataContext;  //Получаем коллекцию вышеполученного элемента
             
-            //dynamic selectedItem = c_LV.SelectedItem;
-            //var NameRoom = selectedItem.Name;
-            //foreach (var room in allRooms)
-            //{
-            //    if (NameRoom == room.Name)                                               //Проверяем если то что мы выбрали есть в коллекции комнат
-            //    {
-            //        //TODO : По логике нужно просто подсветить на плане ревита, то что мы выбрали в ListView
-            //        //new Quartography().uu1(); //TODO : link метода
-            //        //TaskDialog.Show("Совпадение!", $"{"s"}\rNameRoom = {NameRoom}\rroom.Name = {room.Name}", TaskDialogCommonButtons.Close, TaskDialogResult.Close);
-            //    }
-            //}
+            var findObj = rooms.FirstOrDefault(x => x.ID == focusItem.ID); //Ищем наш объект для изменений в коллекции по условию ID который мы фокусим и ID который нужно изменить
+            
+            //TODO : Сделать повышающий коэфициент. Чтобы при выборе обратно площадь вернулась в исходное значение
+            if (findObj != null)
+            {
+                switch(comboBox.SelectedIndex)
+                {
+                    case 0:
+                        findObj.AREA = findObj.Area;
+                        break;
+                    case 1:
+                        //Балкон *.3
+                        findObj.AREA = findObj.Area * 0.3;
+                        break;
+                    case 2:
+                        //Лоджия *.5
+                        findObj.AREA = findObj.Area * 0.5;
+                        break;
+                }
+               
+            }    
         }
+
 
         #region Суммирование прощади
         private void BSum_Aera(object sender, RoutedEventArgs e)
         {
             SelectedListViewItemArea(c_LV);
+#if DEBUG
+            TestSum(c_LV);
+#endif
         }
 
-      
+#if DEBUG
+        /// <summary>
+        /// Тестовый метод, только для теста. 
+        /// </summary>
+        /// <param name="lv"></param>
         void TestSum(ListView lv)
         {
             foreach (var item in lv.Items)
             {
-                var SelectedComboBox = (item as RoomValue).TypeRoom as ComboBox;
-                
-                //SelectedComboBox.SelectionChanged += (s, a) => { TaskDialog.Show("RRR", );  };
-
+                var SelectedComboBox = (item as RoomValue).Coeff;
+                TaskDialog.Show("istins", SelectedComboBox.ToString());
             }
         }
-
+#endif
 
         private double SelectedListViewItemArea(ListView lv) //TODO : Переделать метод логики чтобы не заносились данные в TextBox 
         {
@@ -188,21 +233,51 @@ namespace LodgerBBP
             double ExactSumMath = Math.Round(Convert.ToDouble(OldValue), (int)e.NewValue); //Округление проходит до двух знаков. сделать до 3
             tbSelectArea.Text = ExactSumMath.ToString();
         }
+
+        private void c_LV_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
+        }
     }
 
     /// <summary>
     /// Класс нэминг таблицы в которую будем заносить в ListView на форме
     /// </summary>
-    public class RoomValue
+    public class RoomValue : INotifyPropertyChanged
     {
         public string Name { get; set; }
         public double Area { get; set; }
         public double ExactArea { get; set; }
-        //public string[] TypeRoom { get; set; } = new string[] {"Без коэф.", "Балкон ^0.3", "Лоджия ^0.5"};
+        public string[] TypeRoom { get; set; } = new string[] { };
+        public int ID { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        int coeff;
+        public int Coeff
+        {
+            get
+            {
+                return coeff;
+            }
+            set
+            {
+                coeff = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Coeff)));
+            }
+        }
+
+        public double AREA
+        {
+            get { return Area; }
+            set { Area = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AREA))); }
+        }
+
+
         //public System.Windows.Controls.ComboBox TypeRoom { get; set; } = new System.Windows.Controls.ComboBox();
-        public object TypeRoom { get; set; }
-
-
+        //public ComboBox TypeRoom { get; set; }
 
     }
+
+   
 }
