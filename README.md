@@ -13,4 +13,4 @@
 - [X] ChangeLog https://github.com/anomal3/LodgerBBP/commits/BetaTest
 - [ ] Добавлены TODO для правок :tada:
 - [ ] Сделать правильный выбор для расчёта
-- [ ] _\(Optional) Добавление выбранных помещений см.TODO
+- [ ] _Добавление выбранных помещений см.TODO_
