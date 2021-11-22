@@ -8,6 +8,9 @@
 
 Правка [Заглавного файла](README.md)
 
-- [x] #739
-- [ ] https://github.com/octo-org/octo-repo/issues/740
-- [ ] Add delight to the experience when all tasks are complete :tada:
+- [x] Предварительная сборка
+- [x] Правка ошибок расчёта 
+- [X] ChangeLog https://github.com/anomal3/LodgerBBP/commits/BetaTest
+- [ ] Добавлены TODO для правок :tada:
+- [ ] Сделать правильный выбор для расчёта
+- [-] _\(Optional) Добавление выбранных помещений см.TODO
