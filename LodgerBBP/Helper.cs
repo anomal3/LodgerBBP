@@ -164,8 +164,9 @@ namespace LodgerBBP
             RoomTable_.c_LV.Items.Add(new RoomValue
             {
                 Name = NameRoom,
-                Area = strArea,
-                ExactArea = _ExactArea
+                Area = _ExactArea,
+                ExactArea = _ExactArea,
+                TypeRoom = new RoomValue().TypeRoom
             });
         }
 

@@ -4,6 +4,7 @@ using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using ComboBox = System.Windows.Controls.ComboBox;
 
 namespace LodgerBBP
 {
@@ -39,6 +40,7 @@ namespace LodgerBBP
 
             allRooms = elements;
 
+            
             FormatOptions Round = new FormatOptions();                              //
             Round.UseDefault = false;                                               //Метод округления чисел по математическому принципу. Используется библиотека Revit.DB
             Round.RoundingMethod = RoundingMethod.Up;                               //
@@ -89,13 +91,13 @@ namespace LodgerBBP
                 string strArea = par.AsValueString(/*Round*/);                      //
                 double varDouble = par.AsDouble();                                  //Вычисление прощади
                 double ExactM2Area = varDouble / 10.7639111056;                     //
-
+                
                 if (isFillRoom)
                 {
                     c_LV.Items.Add(new RoomValue                                        //Заносим в ListView наши полученные данные из комнат
                     {
                         Name = room.Name,
-                        Area = strArea,
+                        Area = ExactM2Area,
                         ExactArea = ExactM2Area
                     });
                 }
@@ -104,6 +106,7 @@ namespace LodgerBBP
                     //Добавляем коллекцию комнат в List
 
                 }
+                
             }
 
             #endregion
@@ -111,23 +114,36 @@ namespace LodgerBBP
 
         private void C_LV_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            dynamic selectedItem = c_LV.SelectedItem;
-            var NameRoom = selectedItem.Name;
-            foreach (var room in allRooms)
-            {
-                if (NameRoom == room.Name)                                               //Проверяем если то что мы выбрали есть в коллекции комнат
-                {
-                    //TODO : По логике нужно просто подсветить на плане ревита, то что мы выбрали в ListView
-                    //new Quartography().uu1(); //TODO : link метода
-                    //TaskDialog.Show("Совпадение!", $"{"s"}\rNameRoom = {NameRoom}\rroom.Name = {room.Name}", TaskDialogCommonButtons.Close, TaskDialogResult.Close);
-                }
-            }
+            
+            //dynamic selectedItem = c_LV.SelectedItem;
+            //var NameRoom = selectedItem.Name;
+            //foreach (var room in allRooms)
+            //{
+            //    if (NameRoom == room.Name)                                               //Проверяем если то что мы выбрали есть в коллекции комнат
+            //    {
+            //        //TODO : По логике нужно просто подсветить на плане ревита, то что мы выбрали в ListView
+            //        //new Quartography().uu1(); //TODO : link метода
+            //        //TaskDialog.Show("Совпадение!", $"{"s"}\rNameRoom = {NameRoom}\rroom.Name = {room.Name}", TaskDialogCommonButtons.Close, TaskDialogResult.Close);
+            //    }
+            //}
         }
 
         #region Суммирование прощади
         private void BSum_Aera(object sender, RoutedEventArgs e)
         {
             SelectedListViewItemArea(c_LV);
+        }
+
+      
+        void TestSum(ListView lv)
+        {
+            foreach (var item in lv.Items)
+            {
+                var SelectedComboBox = (item as RoomValue).TypeRoom as ComboBox;
+                
+                //SelectedComboBox.SelectionChanged += (s, a) => { TaskDialog.Show("RRR", );  };
+
+            }
         }
 
 
@@ -180,7 +196,13 @@ namespace LodgerBBP
     public class RoomValue
     {
         public string Name { get; set; }
-        public string Area { get; set; }
+        public double Area { get; set; }
         public double ExactArea { get; set; }
+        //public string[] TypeRoom { get; set; } = new string[] {"Без коэф.", "Балкон ^0.3", "Лоджия ^0.5"};
+        //public System.Windows.Controls.ComboBox TypeRoom { get; set; } = new System.Windows.Controls.ComboBox();
+        public object TypeRoom { get; set; }
+
+
+
     }
 }

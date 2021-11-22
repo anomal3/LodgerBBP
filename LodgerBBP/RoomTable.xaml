@@ -10,9 +10,23 @@
         <ListView x:Name="c_LV" Margin="0,0,0,220">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Помещение" DisplayMemberBinding="{Binding Name}" Width="250"/>
-                    <GridViewColumn Header="S (округ.)" DisplayMemberBinding="{Binding Area}" Width="130"/>
+                    <GridViewColumn Header="Помещение" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                    <GridViewColumn Header="S (с коэф)" DisplayMemberBinding="{Binding Area}" Width="130"/>
                     <GridViewColumn Header="Площадь" DisplayMemberBinding="{Binding ExactArea}"/>
+                    <GridViewColumn Header="Тип помещения" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox Name="cbTypeRoom"
+                                          SelectedItem="{Binding TypeRoom, FallbackValue=1}"
+                                          xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                                          Width="120" >
+                                    <sys:String>Без коэф.</sys:String>
+                                    <sys:String>Балкон ^0.3</sys:String>
+                                    <sys:String>Лоджия ^0.5</sys:String>
+                                </ComboBox>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
