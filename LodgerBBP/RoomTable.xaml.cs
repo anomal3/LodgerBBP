@@ -30,7 +30,7 @@ namespace LodgerBBP
     /// </summary>
     public partial class RoomTable : Window
     {
-        private readonly ObservableCollection<RoomValue> rooms = new ObservableCollection<RoomValue>();
+        public readonly ObservableCollection<RoomValue> rooms = new ObservableCollection<RoomValue>();
 
         ICollection<Element> allRooms;                                              //Переменная колекция помещений 
         /// <summary>
@@ -145,22 +145,23 @@ namespace LodgerBBP
             var focusItem = (RoomValue)FocusItem.DataContext;  //Получаем коллекцию вышеполученного элемента
             
             var findObj = rooms.FirstOrDefault(x => x.ID == focusItem.ID); //Ищем наш объект для изменений в коллекции по условию ID который мы фокусим и ID который нужно изменить
-            
+            var OldArea = findObj.ExactArea;
+
             //TODO : Сделать повышающий коэфициент. Чтобы при выборе обратно площадь вернулась в исходное значение
             if (findObj != null)
             {
                 switch(comboBox.SelectedIndex)
                 {
                     case 0:
-                        findObj.AREA = findObj.Area;
+                        findObj.AREA = OldArea;
                         break;
                     case 1:
                         //Балкон *.3
-                        findObj.AREA = findObj.Area * 0.3;
+                        findObj.AREA = OldArea * 0.3;
                         break;
                     case 2:
                         //Лоджия *.5
-                        findObj.AREA = findObj.Area * 0.5;
+                        findObj.AREA = OldArea * 0.5;
                         break;
                 }
                

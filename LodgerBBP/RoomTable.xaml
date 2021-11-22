@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LodgerBBP"
-              mc:Ignorable="d" Height="693.5" Width="597.333">
+              mc:Ignorable="d" Height="693.5" Width="618.333">
     <Grid Margin="0,0,2,0">
         <ListView x:Name="c_LV" Margin="0,0,0,220" SelectionChanged="c_LV_SelectionChanged">
             <ListView.View>
@@ -24,7 +24,7 @@
                                           SelectionChanged="cbTypeRoom_SelectionChanged"
                                           xmlns:sys="clr-namespace:System;assembly=mscorlib"
                                           Width="120" >
-                                          <!--SelectedItem="{Binding SelectedPriority}"-->
+                                    <!--SelectedItem="{Binding SelectedPriority}"-->
                                     <!--<sys:String>Без коэф.</sys:String>
                                     <sys:String>Балкон ^0.3</sys:String>
                                     <sys:String>Лоджия ^0.5</sys:String>-->
@@ -37,18 +37,18 @@
         </ListView>
         <GroupBox Header="Настройки" Margin="10,0,10,55" Height="160" VerticalAlignment="Bottom" >
             <Grid Height="137" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="555" >
-                <CheckBox Content="Округлять до знака" x:Name="chkMath" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                <CheckBox Content="Округлять до знака" x:Name="chkMath" HorizontalAlignment="Left" Margin="-6,10,0,0" VerticalAlignment="Top"/>
                 <TextBox x:Name="tbSelectArea" Height="23" TextWrapping="Wrap" Text="0" HorizontalAlignment="Left" Width="188" Margin="367,0,0,114"/>
-                <Label x:Name="SliderCount" Content="Label" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top"/>
+                <Label x:Name="SliderCount" Content="Label" HorizontalAlignment="Left" Margin="0,70,0,0" VerticalAlignment="Top"/>
                 <CheckBox x:Name="chkTopMost" Content="Закрепить на перднем плане" HorizontalAlignment="Left" Margin="367,38,0,0" VerticalAlignment="Top" Width="188"/>
             </Grid>
 
         </GroupBox>
         <Label x:Name="lbMathRound" Content="0" HorizontalAlignment="Left" Margin="109,491,0,0" VerticalAlignment="Top" Height="25" IsEnabled="False" RenderTransformOrigin="0.594,0.558"/>
         <Slider x:Name="SlMathRound" HorizontalAlignment="Left" Margin="32,498,0,0" VerticalAlignment="Top" Width="72" Maximum="3" SmallChange="1" ValueChanged="SlMathRound_ValueChanged" IsSnapToTickEnabled="True" TickFrequency="1" IsEnabled="False"/>
-        <Button Content="Обновить" Margin="10,0,427,10" Height="40" VerticalAlignment="Bottom"/>
-        <Button x:Name="bSum" Content="Расчитать" Margin="427,0,10,10" Height="40" VerticalAlignment="Bottom"/>
-        <Button x:Name="bSelectPick" Margin="223,0,214,10" Height="40" VerticalAlignment="Bottom">
+        <Button Content="Обновить" Margin="0,0,427,10" Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="171"/>
+        <Button x:Name="bSum" Content="Расчитать" Margin="0,0,10,10" Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="171"/>
+        <Button x:Name="bSelectPick" Margin="0,0,214,10" Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="171">
             <StackPanel Orientation="Horizontal">
                 <Image x:Name="iBtnPickSel" Source="./Resources/add.png" Margin="0,0,5,0" Height="20" Width="24" />
                 <TextBlock Text="Выбрать помещения"/>

@@ -73,6 +73,16 @@ namespace LodgerBBP.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bug {
+            get {
+                object obj = ResourceManager.GetObject("bug", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap s2_96 {
             get {
                 object obj = ResourceManager.GetObject("s2_96", resourceCulture);
@@ -86,6 +96,16 @@ namespace LodgerBBP.Properties {
         internal static System.Drawing.Bitmap s2_add_96 {
             get {
                 object obj = ResourceManager.GetObject("s2_add_96", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap update {
+            get {
+                object obj = ResourceManager.GetObject("update", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

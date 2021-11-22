@@ -87,6 +87,8 @@
     <None Include="Resources\s2_96.png" />
     <None Include="Resources\s2_add_96.png" />
     <None Include="Resources\add.png" />
+    <None Include="Resources\bug.png" />
+    <None Include="Resources\update.png" />
     <Content Include="scr\AdWindows.dll" />
     <Content Include="scr\RevitAPI.dll" />
     <Content Include="scr\RevitAPI.xml" />

@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 #endregion
 
@@ -20,9 +21,10 @@ namespace LodgerBBP
         public Result OnStartup(UIControlledApplication a)
         {
             string tabName = "ПСК ЛИК Plugins";
-            string panName = "Архитектурный";
+            string panName = "Дополнительно";
             a.CreateRibbonTab(tabName);
             var panel = a.CreateRibbonPanel(tabName, panName);
+
 
             #region Сдвоенная кнопка
             SplitButtonData grpoup1Data = new SplitButtonData("Квартирник", "Квартирник");
@@ -33,11 +35,13 @@ namespace LodgerBBP
             //Инициализируем кнопку и задаём команду которая будет выполняться
             var AddBtnTableRoom = new PushButtonData(
                 HelperNaming.TableRoomAdd[(int)Helper.UINamingArray.NAME],
-                 HelperNaming.TableRoomAdd[(int)Helper.UINamingArray.TEXT], 
-                Assembly.GetExecutingAssembly().Location, 
+                 HelperNaming.TableRoomAdd[(int)Helper.UINamingArray.TEXT],
+                Assembly.GetExecutingAssembly().Location,
                 "LodgerBBP.Command");
             //Выводим короткую подсказку о кнопке
             AddBtnTableRoom.ToolTip = HelperNaming.TableRoomAdd[(int)Helper.UINamingArray.TOOLTIP];
+            ContextualHelp contextHelp = new ContextualHelp(ContextualHelpType.Url, "http://psk-lik.ru/revit/");
+            AddBtnTableRoom.SetContextualHelp(contextHelp);
             //Обявляем кнопку и помещаем её в группу
             var TableRoomnBnt = gr1.AddPushButton(AddBtnTableRoom) as PushButton;
 
@@ -48,6 +52,8 @@ namespace LodgerBBP
             TableRoomnBnt.Image = imgSrcTableRoom;
             //Выводим длинную подсказку [Когда указатель мыши задерживается на объекте больше 3 секунд]
             TableRoomnBnt.LongDescription = HelperNaming.TableRoomAdd[(int)Helper.UINamingArray.DISCRIPTION];
+            //Создадим подсказку для F1
+
             #endregion
 
             #region Кнопка "Таблица выбранных помещений"
@@ -63,7 +69,7 @@ namespace LodgerBBP
             AddBtnSelectedRoom.ToolTip = HelperNaming.SelectedTableRoom[(int)Helper.UINamingArray.TOOLTIP];
             //Обявляем кнопку и помещаем её в группу
             var SelectedRoomnBnt = gr1.AddPushButton(AddBtnSelectedRoom) as PushButton;
-            
+
             //Добавляем картинку на кнопку для визуала
             Image bImgSelectedRoom = Properties.Resources.s2_add_96;
             ImageSource imgSrcSelectedRoom = Helper.Convert(bImgSelectedRoom, Helper.FormatImageConverter.PNG);
@@ -71,13 +77,13 @@ namespace LodgerBBP
             SelectedRoomnBnt.Image = imgSrcSelectedRoom;
             //Выводим длинную подсказку [Когда указатель мыши задерживается на объекте больше 3 секунд]
             SelectedRoomnBnt.LongDescription = HelperNaming.SelectedTableRoom[(int)Helper.UINamingArray.DISCRIPTION];
-            
+
             #endregion
 
-            panel.AddSeparator();
+            AddSlideOut(panel);
 
-            SplitButtonData group2Data = new SplitButtonData("В разработке", new StackFrame(1).GetMethod().DeclaringType.Name);
-            SplitButton gr2 = panel.AddItem(group2Data) as SplitButton;
+            //panel.AddSeparator();
+
             #region Вкладка и кнопка на врехней панеле инструментов [Как образец!]
 
             //var AddBtn = new PushButtonData("-----", "Таблица выбра помещений", Assembly.GetExecutingAssembly().Location, "LodgerBBP.Command");
@@ -91,13 +97,75 @@ namespace LodgerBBP
             //nBnt.Image = imgSrc;
             #endregion
 
-
             #region Кнопка выбора
-           
+
             #endregion
+
+
 
             return Result.Succeeded;
         }
+
+        #region Метод добавления выдвижного меню с кнопками ниже ленты
+        //TODO : сделать классы и проработать логику для двух новых кнопок не относящихся напрямую к логике программы
+        private static void AddSlideOut(Autodesk.Revit.UI.RibbonPanel panel)
+        {
+            string assembly = Assembly.GetExecutingAssembly().Location;
+
+            panel.AddSlideOut();
+            Image bugRep = Properties.Resources.bug;
+            ImageSource _bugRep = Helper.Convert(bugRep, Helper.FormatImageConverter.PNG);
+
+            // create some controls for the slide out
+            PushButtonData b1 = new PushButtonData(HelperNaming.bBugReport[0], 
+                                                   HelperNaming.bBugReport[1], 
+                                                   assembly, 
+                                                   "Hello.HelloButton");
+            b1.LargeImage = _bugRep;
+            b1.ToolTip = HelperNaming.bBugReport[2];
+            b1.LongDescription = HelperNaming.bBugReport[3];
+
+            Image procUpdate = Properties.Resources.update;
+            ImageSource _procUpdate = Helper.Convert(procUpdate, Helper.FormatImageConverter.PNG);
+
+            // create some controls for the slide out
+            PushButtonData bUpdate = new PushButtonData(HelperNaming.bProcessUpdate[0],
+                                                   HelperNaming.bProcessUpdate[1],
+                                                   assembly,
+                                                   "Hello.HelloButton");
+            bUpdate.LargeImage = _procUpdate;
+            bUpdate.ToolTip = HelperNaming.bProcessUpdate[2];
+            bUpdate.LongDescription = HelperNaming.bProcessUpdate[3];
+
+
+            panel.AddItem(b1);
+            panel.AddSeparator();
+            panel.AddItem(bUpdate);
+        }
+        #endregion
+
+        #region Метод добавления своегообразного CheckBox'а
+        public static void AddToggleCustom(Autodesk.Revit.UI.RibbonPanel panel)
+        {
+            SplitButtonData group2Data = new SplitButtonData("В разработке", new StackFrame(1).GetMethod().DeclaringType.Name);
+            SplitButton gr2 = panel.AddItem(group2Data) as SplitButton;
+
+            RadioButtonGroupData radioData = new RadioButtonGroupData("radioGroup");
+
+            RadioButtonGroup radioButtonGroup = panel.AddItem(radioData) as RadioButtonGroup;
+
+            ToggleButtonData tb1 = new ToggleButtonData("OverrideCommand1", "Override Cmd: Off", Assembly.GetExecutingAssembly().Location + "\\" + Assembly.GetExecutingAssembly().Location, "SnapshotRevitUI_CS.OverrideOff");
+
+            ToggleButtonData tb2 = new ToggleButtonData("OverrideCommand2", "Override Cmd: On", Assembly.GetExecutingAssembly().Location + "\\" + Assembly.GetExecutingAssembly().Location, "SnapshotRevitUI_CS.OverrideOn");
+
+            tb2.ToolTip = "Override the Wall Creation command";
+
+            tb2.LargeImage = new BitmapImage(new Uri(@"D:\abacus32.png"));
+
+            radioButtonGroup.AddItem(tb1);
+            radioButtonGroup.AddItem(tb2);
+        }
+        #endregion
 
         public Result OnShutdown(UIControlledApplication a)
         {

@@ -128,6 +128,20 @@ namespace LodgerBBP
             "Откроет таблицу уже выбранных помещений",
             "Перед выбором данной фунции необходимо заранее выбрать помещения которые нужно занести в таблицу"
         };
+
+        public static string[] bBugReport = {
+            "bBugRep",
+            "БАГОРЕПОРТ",
+            "Сообщить о найденом глюке",
+            "Откроет форму для заполнения, и отправки глюка или ошибки"
+        };
+
+        public static string[] bProcessUpdate = {
+            "bPUpdate",
+            "Обновление",
+            "Проверить наличие новых обновлений",
+            "Критические обновлениия могут перезапустить ревит, что может повлечь последствия"
+        };
     }
     #endregion
 
@@ -169,6 +183,12 @@ namespace LodgerBBP
                 ExactArea = _ExactArea,
                 TypeRoom = new RoomValue().TypeRoom
             });
+        }
+
+        //TODO : Сделать метод добавления в коллекцию по аналогии с AddToList
+        public void AddToObserverCollection()
+        {
+
         }
 
         public void ClearItems()
