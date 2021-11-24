@@ -11,6 +11,8 @@ using Autodesk.Revit.DB.Architecture;
 using System.Reflection;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using System.Windows.Controls;
+using System.Windows;
 
 namespace LodgerBBP
 {
@@ -23,7 +25,7 @@ namespace LodgerBBP
         /// </summary>
         /// <param name="img"></param>
         /// <returns></returns>
-        public static BitmapImage Convert (Image img)
+        public static BitmapImage Convert (System.Drawing.Image img)
         {
             using (var memory = new MemoryStream())
             {
@@ -45,7 +47,7 @@ namespace LodgerBBP
         /// <param name="img">Исходное изображение</param>
         /// <param name="fic">Выбор формата</param>
         /// <returns></returns>
-        public static BitmapImage Convert(Image img, FormatImageConverter fic)
+        public static BitmapImage Convert(System.Drawing.Image img, FormatImageConverter fic)
         {
             ImageFormat IF = ImageFormat.Png;
 
@@ -185,15 +187,27 @@ namespace LodgerBBP
             });
         }
 
-        //TODO : Сделать метод добавления в коллекцию по аналогии с AddToList
-        public void AddToObserverCollection()
+        int _ID = 0;
+        public void AddToObserverCollection(string NameRoom, double dArea, double _ExactArea)
         {
-
+            RoomTable_.rooms.Add(new RoomValue
+            {
+                Name = NameRoom,
+                Area = dArea,
+                ExactArea = _ExactArea,
+                TypeRoom = new string[] { "Без коэф.", "Балкон ^0.3", "Лоджия ^0.5" },
+                ID = _ID++
+            });
+            RoomTable_.c_LV.ItemsSource = RoomTable_.rooms;
+            
         }
+
 
         public void ClearItems()
         {
-            RoomTable_.c_LV.Items.Clear();
+            //if(RoomTable_.c_LV.Items.Count > 0)
+                RoomTable_.c_LV.Items.Clear();
+            return;
         }
 
         public static void ChangeTitle(string message)

@@ -117,25 +117,25 @@ namespace LodgerBBP
             ImageSource _bugRep = Helper.Convert(bugRep, Helper.FormatImageConverter.PNG);
 
             // create some controls for the slide out
-            PushButtonData b1 = new PushButtonData(HelperNaming.bBugReport[0], 
-                                                   HelperNaming.bBugReport[1], 
+            PushButtonData b1 = new PushButtonData(HelperNaming.bBugReport[(int)Helper.UINamingArray.NAME], 
+                                                   HelperNaming.bBugReport[(int)Helper.UINamingArray.TEXT], 
                                                    assembly, 
                                                    "Hello.HelloButton");
             b1.LargeImage = _bugRep;
-            b1.ToolTip = HelperNaming.bBugReport[2];
-            b1.LongDescription = HelperNaming.bBugReport[3];
+            b1.ToolTip = HelperNaming.bBugReport[(int)Helper.UINamingArray.TOOLTIP];
+            b1.LongDescription = HelperNaming.bBugReport[(int)Helper.UINamingArray.DISCRIPTION];
 
             Image procUpdate = Properties.Resources.update;
             ImageSource _procUpdate = Helper.Convert(procUpdate, Helper.FormatImageConverter.PNG);
 
             // create some controls for the slide out
-            PushButtonData bUpdate = new PushButtonData(HelperNaming.bProcessUpdate[0],
-                                                   HelperNaming.bProcessUpdate[1],
+            PushButtonData bUpdate = new PushButtonData(HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.NAME],
+                                                   HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.TEXT],
                                                    assembly,
                                                    "Hello.HelloButton");
             bUpdate.LargeImage = _procUpdate;
-            bUpdate.ToolTip = HelperNaming.bProcessUpdate[2];
-            bUpdate.LongDescription = HelperNaming.bProcessUpdate[3];
+            bUpdate.ToolTip = HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.TOOLTIP];
+            bUpdate.LongDescription = HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.DISCRIPTION];
 
 
             panel.AddItem(b1);

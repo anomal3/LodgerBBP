@@ -5,11 +5,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LodgerBBP"
-              mc:Ignorable="d" Height="693.5" Width="618.333">
-    <Grid Margin="0,0,2,0">
-        <ListView x:Name="c_LV" Margin="0,0,0,220" SelectionChanged="c_LV_SelectionChanged">
+              mc:Ignorable="d" Height="693.5" Width="618.333" WindowStartupLocation="CenterScreen">
+    
+    <Window.DataContext>
+        <local:RoomValue/>
+    </Window.DataContext>
+    <Grid Margin="0,0,2,0" >
+        <ListView x:Name="c_LV" Margin="0,0,0,220">
             <ListView.View>
-                <GridView>
+                <GridView AllowsColumnReorder="true"  ColumnHeaderToolTip="Столбцы можно перемещать мышью для удобства!">
                     <GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}" Width="20"/>
                     <GridViewColumn Header="Помещение" DisplayMemberBinding="{Binding Name}" Width="200"/>
                     <GridViewColumn Header="S (с коэф)" DisplayMemberBinding="{Binding Area}" Width="130"/>
@@ -19,7 +23,6 @@
                             <DataTemplate>
                                 <ComboBox Name="cbTypeRoom" 
                                           ItemsSource="{Binding TypeRoom}"
-                                          SelectedIndex="{Binding Coeff,FallbackValue=1}"
                                           Text="Выберите"
                                           SelectionChanged="cbTypeRoom_SelectionChanged"
                                           xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -30,6 +33,7 @@
                                     <sys:String>Лоджия ^0.5</sys:String>-->
                                 </ComboBox>
                             </DataTemplate>
+
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                 </GridView>

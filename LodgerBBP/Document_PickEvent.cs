@@ -29,6 +29,7 @@ namespace LodgerBBP
         {
             ExtensionHelperListView.ChangeTitle("Выбираем квартиры");
             ExtensionHelperListView EHLV = new ExtensionHelperListView();
+            EHLV.ClearItems();
 
             UIDocument uidoc = uiapp.ActiveUIDocument;
             if (null == uidoc)
@@ -51,15 +52,16 @@ namespace LodgerBBP
                 //while (true)
                 //{
                 #endregion
-
                 Selection sel = uidoc.Selection;
                 IList<Reference> objRefsToCopy = sel.PickObjects(ObjectType.Element, "Выберите помещения для добавления в коллекцию");
+               
                 //XYZ basePoint = sel.PickPoint("Pick base point");
 
-                EHLV.ClearItems();
-
+                
+                //TaskDialog.Show("dsa", "dsada");
                 foreach (Reference r in objRefsToCopy)
                 {
+                    
                     Element element2Ref = uidoc.Document.GetElement(r.ElementId);
                     elemIdList.Add(r.ElementId);
                     elemList.Add(element2Ref);
@@ -70,8 +72,11 @@ namespace LodgerBBP
                         string strArea = par.AsValueString(/*Round*/);
                         double varDouble = par.AsDouble();
                         double ExactM2Area = varDouble / 10.7639111056;
-                        EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
-
+                        double dArea = ExactM2Area;
+                        //EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
+                        
+                        EHLV.AddToObserverCollection(element2Ref.Name, dArea, ExactM2Area);
+                        
                     }
 
                     //ActDP?.Invoke(this, new Document_PickEventArgs(element2Ref.Name));

@@ -63,7 +63,7 @@ namespace LodgerBBP
             //    tx.Commit();
             //}
 
-            RoomTable uwr = new RoomTable(AR(commandData), true);
+            RoomTable uwr = new RoomTable(AR(commandData), false);
             uwr.Show();
             return Result.Succeeded;
         }

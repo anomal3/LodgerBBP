@@ -40,6 +40,7 @@ namespace LodgerBBP
         /// <param name="isFillRoom">Заполнять сразу в ListView</param>
         public RoomTable(ICollection<Element> elements, bool isFillRoom)
         {
+            DataContext = this;
             InitializeComponent();
            
 
@@ -126,7 +127,7 @@ namespace LodgerBBP
                     //Добавляем коллекцию комнат в List
 
                 }
-                c_LV.ItemsSource = rooms;
+               // c_LV.ItemsSource = rooms;
             }
 
             #endregion
@@ -139,33 +140,39 @@ namespace LodgerBBP
         /// <param name="e"></param>
         private void cbTypeRoom_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var comboBox = (ComboBox)e.OriginalSource; //Получаем тыкнутый мышкой ComboBox
-
-            var FocusItem = (FrameworkElement)e.OriginalSource; //Получаем элемент строки в зависимости на какой ComboBox мы тыкнули
-            var focusItem = (RoomValue)FocusItem.DataContext;  //Получаем коллекцию вышеполученного элемента
-            
-            var findObj = rooms.FirstOrDefault(x => x.ID == focusItem.ID); //Ищем наш объект для изменений в коллекции по условию ID который мы фокусим и ID который нужно изменить
-            var OldArea = findObj.ExactArea;
-
-            //TODO : Сделать повышающий коэфициент. Чтобы при выборе обратно площадь вернулась в исходное значение
-            if (findObj != null)
+            try
             {
-                switch(comboBox.SelectedIndex)
+                var comboBox = e.OriginalSource as ComboBox; //Получаем тыкнутый мышкой ComboBox
+
+                var FocusItem = (FrameworkElement)e.OriginalSource; //Получаем элемент строки в зависимости на какой ComboBox мы тыкнули
+
+                var focusItem = (RoomValue)FocusItem.DataContext;  //Получаем коллекцию вышеполученного элемента
+
+                var fobj = rooms.Where(x => x.ID == focusItem.ID).FirstOrDefault();
+                //var findObj = rooms.FirstOrDefault(x => x.ID == focusItem.ID); //Ищем наш объект для изменений в коллекции по условию ID который мы фокусим и ID который нужно изменить
+                var OldArea = fobj.ExactArea;
+
+                //TODO : Сделать повышающий коэфициент. Чтобы при выборе обратно площадь вернулась в исходное значение
+                if (fobj != null)
                 {
-                    case 0:
-                        findObj.AREA = OldArea;
-                        break;
-                    case 1:
-                        //Балкон *.3
-                        findObj.AREA = OldArea * 0.3;
-                        break;
-                    case 2:
-                        //Лоджия *.5
-                        findObj.AREA = OldArea * 0.5;
-                        break;
+                    switch (comboBox.SelectedIndex)
+                    {
+                        case 0:
+                            fobj.AREA = OldArea;
+                            break;
+                        case 1:
+                            //Балкон *.3
+                            fobj.AREA = OldArea * 0.3;
+                            break;
+                        case 2:
+                            //Лоджия *.5
+                            fobj.AREA = OldArea * 0.5;
+                            break;
+                    }
+
                 }
-               
-            }    
+            }
+            catch (Exception ex) { TaskDialog.Show("erf", ex.Message); }
         }
 
 
@@ -187,8 +194,7 @@ namespace LodgerBBP
         {
             foreach (var item in lv.Items)
             {
-                var SelectedComboBox = (item as RoomValue).Coeff;
-                TaskDialog.Show("istins", SelectedComboBox.ToString());
+               
             }
         }
 #endif
@@ -251,6 +257,8 @@ namespace LodgerBBP
         public double ExactArea { get; set; }
         public string[] TypeRoom { get; set; } = new string[] { };
         public int ID { get; set; }
+
+        public ComboBox cbRoomType { get; set; } = new ComboBox();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
