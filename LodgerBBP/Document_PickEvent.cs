@@ -55,9 +55,8 @@ namespace LodgerBBP
                 Selection sel = uidoc.Selection;
 
                 #region Выбор цвета https://thebuildingcoder.typepad.com/blog/2019/09/whats-new-in-the-revit-20201-api.html#2.5.1
-                Color col = new Color(255, 0, 0);
-                ColorOptions ColOp = ColorOptions.GetColorOptions();
-                ColOp.SelectionColor = col;
+                Helper.SelectionColor(128,255,64,true);
+                Helper.PreselectionColor(255,0,0);
                 #endregion
 
                 IList<Reference> objRefsToCopy = sel.PickObjects(ObjectType.Element, "Выберите помещения для добавления в коллекцию");
@@ -82,7 +81,7 @@ namespace LodgerBBP
                         double dArea = ExactM2Area;
                         //EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
                         new Helper().RoomTypeDefinition(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
-                        EHLV.AddToObserverCollection(element2Ref.Name, dArea, ExactM2Area);
+                        EHLV.AddToObserverCollection(element2Ref.Name, dArea, ExactM2Area, elemIdList, r.ElementId);
                     }
 
                     //ActDP?.Invoke(this, new Document_PickEventArgs(element2Ref.Name));
@@ -90,6 +89,7 @@ namespace LodgerBBP
 
                 uidoc.Selection.SetElementIds(elemIdList);
                 uidoc.ShowElements(elemIdList);
+                Helper.ColorDefault();
 
                 var td = new TaskDialog("Info");                                    //Всплывающее окно
                 //td.MainInstruction = uiapp.ActiveUIDocument.Selection.GetElementIds().Aggregate("", (ss, el) => ss + "," + el).TrimStart(','); // Выводит ID выбранных пом-ий
@@ -137,9 +137,11 @@ namespace LodgerBBP
                 //    td.Show();
                 //}
                 #endregion
-                //uidoc.RefreshActiveView();
+                uidoc.RefreshActiveView();
                 //===============================================//
                 tx.Commit();
+
+                ExtensionHelperListView.ChangeTitle(Data.Version()); //Возвращаем версию приложения после выбора
             }
         }
 

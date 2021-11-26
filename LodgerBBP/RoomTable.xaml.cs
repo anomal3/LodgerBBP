@@ -146,6 +146,13 @@ namespace LodgerBBP
             }
 
             #endregion
+
+            bAddAppart.Click += (s, a) => {
+                var FocusItem = (FrameworkElement)a.OriginalSource; //Получаем элемент строки в зависимости на какой ComboBox мы тыкнули
+                var focusItem = (RoomValue)FocusItem.DataContext;  //Получаем коллекцию вышеполученного элемента
+                var fobj = rooms.Where(x => x.ID == focusItem.ID).FirstOrDefault();
+                MessageBox.Show(fobj.Name);
+            };
         }
 
 
@@ -294,7 +301,7 @@ namespace LodgerBBP
         public string[] TypeRoom { get; set; } = new string[] { "Жилая", "Не жилая", "Балкон(0.3)", "Лоджия(0.5)", "Терраса (0.3)" };
         public int ID { get; set; } //ID порядкового номера
 
-        public int IDElement { get; set; } //Реальный ID елемента
+        public ElementId ElementID { get; set; } //Реальный ID елемента
 
         public ComboBox cbRoomType { get; set; } = new ComboBox();
 
