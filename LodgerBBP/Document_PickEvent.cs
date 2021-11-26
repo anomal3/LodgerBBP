@@ -53,6 +53,13 @@ namespace LodgerBBP
                 //{
                 #endregion
                 Selection sel = uidoc.Selection;
+
+                #region Выбор цвета https://thebuildingcoder.typepad.com/blog/2019/09/whats-new-in-the-revit-20201-api.html#2.5.1
+                Color col = new Color(255, 0, 0);
+                ColorOptions ColOp = ColorOptions.GetColorOptions();
+                ColOp.SelectionColor = col;
+                #endregion
+
                 IList<Reference> objRefsToCopy = sel.PickObjects(ObjectType.Element, "Выберите помещения для добавления в коллекцию");
                
                 //XYZ basePoint = sel.PickPoint("Pick base point");
@@ -69,14 +76,13 @@ namespace LodgerBBP
                     if (objRefsToCopy.Count != 0)
                     {
                         Parameter par = element2Ref.get_Parameter(BuiltInParameter.ROOM_AREA);
-                        string strArea = par.AsValueString(/*Round*/);
+                        //string strArea = par.AsValueString(/*Round*/);
                         double varDouble = par.AsDouble();
                         double ExactM2Area = varDouble / 10.7639111056;
                         double dArea = ExactM2Area;
                         //EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
-                        
+                        new Helper().RoomTypeDefinition(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
                         EHLV.AddToObserverCollection(element2Ref.Name, dArea, ExactM2Area);
-                        
                     }
 
                     //ActDP?.Invoke(this, new Document_PickEventArgs(element2Ref.Name));
@@ -91,7 +97,7 @@ namespace LodgerBBP
                 td.TitleAutoPrefix = false;
                 td.Show();
 
-               
+                //uidoc.Selection.SetElementIds(elemIdList); //Подсветить элементы 
                 #region Устаревший метод выбра
                 //elemIdList.Add(uidoc.Selection.PickObject(ObjectType.Element, "Выберите помещения для добавления в коллекцию").ElementId);
                 //if (elemIdList != null & elemIdList.Count != 0)
@@ -136,6 +142,8 @@ namespace LodgerBBP
                 tx.Commit();
             }
         }
+
+      
 
         #region Смена цвета выбранного элемента [Не поддерживается]
         public void ChangeElementColor(UIApplication uiapp)

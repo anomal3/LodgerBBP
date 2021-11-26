@@ -109,6 +109,31 @@ namespace LodgerBBP
         }
         #endregion
 
+        #region Метод определения и автоматического заполнения ComboBox типа помещения
+        /// <summary>
+        /// Метод определения и автоматического заполнения ComboBox типа помещения
+        /// </summary>
+        /// <param name="line">Входящий параметр имя комнаты</param>
+        public void RoomTypeDefinition(string line)
+        {
+            if (!string.IsNullOrEmpty(line))
+            {
+                switch (line.ToLower())
+                {
+                    case "лоджия":
+                        Data.iTypeRoomSlectionIndex = 3;
+                        break;
+                    case "балкон":
+                        Data.iTypeRoomSlectionIndex = 2;
+                        break;
+                    default:
+                        Data.iTypeRoomSlectionIndex = 0;
+                        break;
+                }
+            }
+        }
+        #endregion
+
     }
 
     #region Класс HelperNaming Наименование элементов [Имя, текст, описание и т.п.]
@@ -144,6 +169,13 @@ namespace LodgerBBP
             "Проверить наличие новых обновлений",
             "Критические обновлениия могут перезапустить ревит, что может повлечь последствия"
         };
+
+        public static string[] bScheduleSheets = {
+            "bSchedule",
+            "Создать экспликацию",
+            "Создаёт экспликацию текущего вида",
+            "Перед созданием нужно будет задать имя, инчаче имя присвоится как \"Не названная экспликация (DateTime.Now)\""
+        };
     }
     #endregion
 
@@ -167,6 +199,10 @@ namespace LodgerBBP
         #endregion
 
         public static ICollection<Element> CollectionElements { get; set; }
+
+        public static string NameSpecificSchedule { get; set; }
+
+        public static int iTypeRoomSlectionIndex { get; set; } //Передаваемый параметр типа помещения при заполнеии ComboBox
 
     }
     #endregion
@@ -195,7 +231,7 @@ namespace LodgerBBP
                 Name = NameRoom,
                 Area = dArea,
                 ExactArea = _ExactArea,
-                TypeRoom = new string[] { "Без коэф.", "Балкон ^0.3", "Лоджия ^0.5" },
+                TypeRoom = new string[] { "Жилая", "Не жилая", "Балкон(0.3)", "Лоджия(0.5)", "Терраса (0.3)" },
                 ID = _ID++
             });
             RoomTable_.c_LV.ItemsSource = RoomTable_.rooms;
@@ -205,9 +241,12 @@ namespace LodgerBBP
 
         public void ClearItems()
         {
-            //if(RoomTable_.c_LV.Items.Count > 0)
-                RoomTable_.c_LV.Items.Clear();
-            return;
+            try
+            {
+                if (RoomTable_.rooms.Count > 0)
+                    RoomTable_.rooms.Clear();
+            }
+            catch { }
         }
 
         public static void ChangeTitle(string message)

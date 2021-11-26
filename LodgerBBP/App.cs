@@ -25,11 +25,38 @@ namespace LodgerBBP
             a.CreateRibbonTab(tabName);
             var panel = a.CreateRibbonPanel(tabName, panName);
 
-
+            panel.AddSeparator();
             #region Сдвоенная кнопка
             SplitButtonData grpoup1Data = new SplitButtonData("Квартирник", "Квартирник");
             SplitButton gr1 = panel.AddItem(grpoup1Data) as SplitButton;
+            gr1.AddSeparator();
             #endregion
+
+            panel.AddSeparator();
+            #region Кнопка "Экспликация текущего вида"
+            //Инициализируем кнопку и задаём команду которая будет выполняться
+            var AddBtnCreateSchedule = new PushButtonData(
+                HelperNaming.bScheduleSheets[(int)Helper.UINamingArray.NAME],
+                 HelperNaming.bScheduleSheets[(int)Helper.UINamingArray.TEXT],
+                Assembly.GetExecutingAssembly().Location,
+                new SchelVent().ClassName
+                );
+
+            //Выводим короткую подсказку о кнопке
+            AddBtnCreateSchedule.ToolTip = HelperNaming.bScheduleSheets[(int)Helper.UINamingArray.TOOLTIP];
+            //Обявляем кнопку и помещаем её в группу
+            var SheduleBtn = panel.AddItem(AddBtnCreateSchedule) as PushButton;
+
+            //Добавляем картинку на кнопку для визуала
+            Image bImgSchedule = Properties.Resources.document_valid;
+            ImageSource imgSrcchedule = Helper.Convert(bImgSchedule, Helper.FormatImageConverter.PNG);
+            SheduleBtn.LargeImage = imgSrcchedule;
+            SheduleBtn.Image = imgSrcchedule;
+            //Выводим длинную подсказку [Когда указатель мыши задерживается на объекте больше 3 секунд]
+            SheduleBtn.LongDescription = HelperNaming.bScheduleSheets[(int)Helper.UINamingArray.DISCRIPTION];
+
+            #endregion
+            panel.AddSeparator();
 
             #region Кнопка "Таблица выбора помещений"
             //Инициализируем кнопку и задаём команду которая будет выполняться
@@ -81,6 +108,7 @@ namespace LodgerBBP
             #endregion
 
             AddSlideOut(panel);
+            
 
             //panel.AddSeparator();
 
@@ -116,11 +144,11 @@ namespace LodgerBBP
             Image bugRep = Properties.Resources.bug;
             ImageSource _bugRep = Helper.Convert(bugRep, Helper.FormatImageConverter.PNG);
 
-            // create some controls for the slide out
+            // Создание кнопки баг репорт
             PushButtonData b1 = new PushButtonData(HelperNaming.bBugReport[(int)Helper.UINamingArray.NAME], 
                                                    HelperNaming.bBugReport[(int)Helper.UINamingArray.TEXT], 
-                                                   assembly, 
-                                                   "Hello.HelloButton");
+                                                   assembly,
+                                                   "LodgerBBP.SchelVent"); //Какой класс будет вызываться по нажатию
             b1.LargeImage = _bugRep;
             b1.ToolTip = HelperNaming.bBugReport[(int)Helper.UINamingArray.TOOLTIP];
             b1.LongDescription = HelperNaming.bBugReport[(int)Helper.UINamingArray.DISCRIPTION];
@@ -132,7 +160,7 @@ namespace LodgerBBP
             PushButtonData bUpdate = new PushButtonData(HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.NAME],
                                                    HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.TEXT],
                                                    assembly,
-                                                   "Hello.HelloButton");
+                                                   "LodgerBBP.SchelVent");
             bUpdate.LargeImage = _procUpdate;
             bUpdate.ToolTip = HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.TOOLTIP];
             bUpdate.LongDescription = HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.DISCRIPTION];

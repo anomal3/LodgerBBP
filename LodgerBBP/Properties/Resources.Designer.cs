@@ -61,6 +61,16 @@ namespace LodgerBBP.Properties {
         }
         
         /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] _69880c1f5e57698 {
+            get {
+                object obj = ResourceManager.GetObject("_69880c1f5e57698", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap add {
@@ -77,6 +87,26 @@ namespace LodgerBBP.Properties {
             get {
                 object obj = ResourceManager.GetObject("bug", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap document_valid {
+            get {
+                object obj = ResourceManager.GetObject("document_valid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] MouseEnterElement {
+            get {
+                object obj = ResourceManager.GetObject("MouseEnterElement", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

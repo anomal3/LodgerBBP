@@ -29,6 +29,16 @@ namespace LodgerBBP
             return allRooms;
         }
 
+        public ICollection<Element> ART(ExternalCommandData commandData) //Возвращаемая колекция помещений
+        {
+            Document doc = commandData.Application.ActiveUIDocument.Document;
+            Data.UIDOC = doc;
+            FilteredElementCollector roomFilter = new FilteredElementCollector(doc);
+            ICollection<Element> allRooms = roomFilter.OfCategory(BuiltInCategory.OST_RoomTags).WhereElementIsNotElementType().ToElements();
+            ICE = allRooms;
+            return allRooms;
+        }
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             //UIApplication uiapp = commandData.Application;
