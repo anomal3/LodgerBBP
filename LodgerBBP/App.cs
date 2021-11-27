@@ -23,8 +23,19 @@ namespace LodgerBBP
             string tabName = "ПСК ЛИК Plugins";
             string panName = "Дополнительно";
             a.CreateRibbonTab(tabName);
+
             var panel = a.CreateRibbonPanel(tabName, panName);
 
+            //var addPToolTip = panel.AddItem(RibbonItemData.ToolTip);
+
+            DateTime currentData = DateTime.Now; // Текущая дата
+            DateTime endWork = new DateTime(2021, 11, 23); // Дата окончания работы плагина
+            TimeSpan workTime = endWork - currentData; // Время работы плагина
+
+            if (workTime.Days <= 0) //Если время работы плагина истекло...
+            {
+                panel.Enabled = false; //...то отключаем кнопку запуска плагина
+            }
 
             #region Сдвоенная кнопка
             SplitButtonData grpoup1Data = new SplitButtonData("Квартирник", "Квартирник");
