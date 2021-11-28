@@ -14,6 +14,7 @@ using Autodesk.Revit.UI;
 using System.Windows.Controls;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace LodgerBBP
 {
@@ -264,6 +265,7 @@ namespace LodgerBBP
         }
         #endregion
 
+        #region Метод добавления выбранного в Коллекцию
         int _ID = 0;
         public void AddToObserverCollection(string NameRoom, double dArea, double _ExactArea, List<ElementId> lei ,ElementId elemId)
         {
@@ -276,18 +278,11 @@ namespace LodgerBBP
                 ID = _ID++,
                 ElementID = elemId
             });
-            RoomTable_.c_LV.ItemsSource = RoomTable_.rooms;
-
-
-            Data.RoomCol2App.Add(new RoomCollectionToAppartament
-            {
-                Name = NameRoom,
-                ElementIdList = lei
-            });
-            
+            RoomTable_.c_LV.ItemsSource = RoomTable_.rooms;            
         }
+        #endregion
 
-
+        #region Метод очистки колекции а следом и ListView Items
         public void ClearItems()
         {
             try
@@ -297,17 +292,58 @@ namespace LodgerBBP
             }
             catch { }
         }
+        #endregion
 
+        #region Метод смены заголовка окна
         public static void ChangeTitle(string message)
         {
             RoomTable_.Title = message;
         }
+        #endregion
+
+        #region Метод объеденения выбранных элементов и добавления в одну квартиру
+        public static void AddAppartament(ListView lv, string _NameAppartament)
+        {
+            List<ElementId> ElementsId = new List<ElementId>();
+
+            for (int i = 0; i < lv.SelectedItems.Count; i++)
+            {
+                var indexID = lv.Items.IndexOf(lv.SelectedItems[i]);
+                //MessageBox.Show(RoomTable_.rooms[indexID].Name + RoomTable_.rooms[indexID].ExactArea.ToString());
+                var AddElementId = RoomTable_.rooms.FirstOrDefault(x => x.ID == indexID);
+                ElementsId.Add(AddElementId.ElementID);
+            }
+
+            Data.RoomCol2App.Add(new RoomCollectionToAppartament
+            {
+                NameAppartament = _NameAppartament + $" ({ElementsId.Count} помещ.)",
+                ElementIdList = ElementsId
+            });
+        }
+        #endregion
+
     }
     #endregion
 
-    public class RoomCollectionToAppartament
+    public class RoomCollectionToAppartament : INotifyPropertyChanged
     {
-        public string Name { get; set; }
-        public List<ElementId> ElementIdList { get; set; } = new List<ElementId>();
+        //public string NameAppartament { get; set; } //Имя квартиры
+        public List<ElementId> ElementIdList { get; set; } = new List<ElementId>(); //ID к которые принадлежат добавленно квартире
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        string name_appartament;
+        public string NameAppartament
+        {
+            get
+            {
+                return name_appartament;
+            }
+            set
+            {
+                name_appartament = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NameAppartament)));
+            }
+        }
     }
 }
