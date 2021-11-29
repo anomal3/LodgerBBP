@@ -287,7 +287,6 @@ namespace LodgerBBP
             if (Data.ActiveDocument != null)
             {
                 var CurElement = Data.ActiveDocument.GetElement(elemId);
-                Data.MinorNumberRoom.Add(CurElement.get_Parameter((BuiltInParameter)292423).AsInteger());
                 RoomTable_.tbSection.Text = CurElement.get_Parameter((BuiltInParameter)292425).AsString();
                 RoomTable_.tbRoof.Text = CurElement.get_Parameter((BuiltInParameter)292394).AsString();
                 RoomTable_.tbNewNameAdd.Text = Data.MinorNumberRoom.Min().ToString();
