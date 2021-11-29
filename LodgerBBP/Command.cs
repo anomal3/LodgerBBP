@@ -22,7 +22,7 @@ namespace LodgerBBP
         public ICollection<Element> AR(ExternalCommandData commandData) //Возвращаемая колекция помещений
         {
             Document doc = commandData.Application.ActiveUIDocument.Document;
-            Data.UIDOC = doc;
+            Data.ActiveDocument = doc;
             FilteredElementCollector roomFilter = new FilteredElementCollector(doc);
             ICollection<Element> allRooms = roomFilter.OfCategory(BuiltInCategory.OST_Rooms).WhereElementIsNotElementType().ToElements();
             ICE = allRooms;
@@ -32,7 +32,7 @@ namespace LodgerBBP
         public ICollection<Element> ART(ExternalCommandData commandData) //Возвращаемая колекция помещений
         {
             Document doc = commandData.Application.ActiveUIDocument.Document;
-            Data.UIDOC = doc;
+            Data.ActiveDocument = doc;
             FilteredElementCollector roomFilter = new FilteredElementCollector(doc);
             ICollection<Element> allRooms = roomFilter.OfCategory(BuiltInCategory.OST_RoomTags).WhereElementIsNotElementType().ToElements();
             ICE = allRooms;

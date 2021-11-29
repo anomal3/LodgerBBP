@@ -58,11 +58,12 @@ namespace LodgerBBP
             tbNewNameAdd.Loaded += (s, a) => {
                 tbNewNameAdd.Foreground = new SolidColorBrush(Colors.Gray);
                 tbNewNameAdd.FontStyle = FontStyles.Italic;
-                tbNewNameAdd.Text = "Название квартиры...";
+                tbNewNameAdd.Text = "0";
             };                                   //
 
             tbNewNameAdd.GotFocus += RemoveText;                                   //Метод с текстовым полем 
             tbNewNameAdd.LostFocus += AddText;                                     //
+            lbAppartament.LostFocus += (s, a) => { lbAppartament.SelectedIndex = -1; };
 
             FormatOptions Round = new FormatOptions();                              //
             Round.UseDefault = false;                                               //Метод округления чисел по математическому принципу. Используется библиотека Revit.DB
@@ -78,7 +79,7 @@ namespace LodgerBBP
             };
 
             bSelectPick.Click += (s, a) => {
-               
+                new ExtensionHelperListView().ClearItems();
                 exEvent.Raise(); 
             };                    /*Событие когда мы выбираем помещения мышкой*/
 
@@ -161,11 +162,54 @@ namespace LodgerBBP
             #endregion
 
             bAddAppart.Click += (s, a) => {
-                ExtensionHelperListView.AddAppartament(c_LV, tbNewNameAdd.Text);
-                lbAppartament.ItemsSource = Data.RoomCol2App;
-                tbNewNameAdd.Text = "Название квартиры...";
+                if (!string.IsNullOrEmpty(tbSection.Text) & !string.IsNullOrEmpty(tbRoof.Text) & Convert.ToInt32(tbNewNameAdd.Text) != 0)
+                {
+                    string NameAppart = $"{tbSection.Text}-{tbRoof.Text}-{tbNewNameAdd.Text}";
+                    ExtensionHelperListView.AddAppartament(c_LV, NameAppart);
+                    lbAppartament.ItemsSource = Data.RoomCol2App;
+                    tbNewNameAdd.Text = "0";
+                }
+                else
+                {
+                    TaskDialog.Show("Error added", "Номер аппартаментов должен быть заполнен!");
+                    return;
+                }
             };
 
+
+            lbAppartament.MouseDoubleClick += (s, a) => {
+                var FocusItem = (FrameworkElement)a.OriginalSource;
+                if (FocusItem == null) return;
+                else {
+
+                    try
+                    {
+                        var focusItem = (RoomCollectionToAppartament)FocusItem.DataContext;
+
+                        if (a.ChangedButton == MouseButton.Left)
+                        {
+                            //Добавляем контекстное меню
+                            MenuItem ShowRoom = new MenuItem();
+                            ShowRoom.Header = $"Отобразить";
+                            ShowRoom.Click += (@sender, @event) => { ExtensionHelperListView.AppartamentSelectedShowDocument(focusItem.NameAppartament, true); };
+
+                            MenuItem DelRoom = new MenuItem();
+                            DelRoom.Header = "Удалить";
+                            DelRoom.Click += (@sender, @event) => { Data.RoomCol2App.Remove(Data.RoomCol2App.FirstOrDefault(x => x.NameAppartament == focusItem.NameAppartament)); };
+
+                            ContextMenu cm = new ContextMenu();
+                            cm.Items.Add(ShowRoom);
+                            cm.Items.Add(DelRoom);
+                            cm.IsOpen = true;
+                        }
+                        else
+                        {
+                            ExtensionHelperListView.AppartamentSelectedShowDocument(focusItem.NameAppartament, false);
+                        }
+                    }
+                    catch { }
+                }
+            };
         }
 
 
@@ -175,7 +219,7 @@ namespace LodgerBBP
             tbNewNameAdd.Foreground = new SolidColorBrush(Colors.Black);
             tbNewNameAdd.FontStyle = FontStyles.Normal;
 
-            if (tbNewNameAdd.Text == "Название квартиры...")
+            if (tbNewNameAdd.Text == "0")
             {
                 tbNewNameAdd.Text = "";
             }
@@ -184,17 +228,21 @@ namespace LodgerBBP
 
         public void AddText(object sender, EventArgs e)
         {
+            //Поправить в  обновлении PlaceHoldedr
             tbNewNameAdd.Foreground = new SolidColorBrush(Colors.Gray);
             tbNewNameAdd.FontStyle = FontStyles.Italic;
-
-            if (string.IsNullOrWhiteSpace(tbNewNameAdd.Text))
-                tbNewNameAdd.Text = "Название квартиры...";
+            if (string.IsNullOrWhiteSpace(tbNewNameAdd.Text)/* || Convert.ToInt32(tbNewNameAdd.Text) == 0*/)
+            {
+                //tbNewNameAdd.Foreground = new SolidColorBrush(Colors.Gray);
+                //tbNewNameAdd.FontStyle = FontStyles.Italic;
+                tbNewNameAdd.Text = "0";
+            }
         }
         #endregion
 
         private void RoomTable_Loaded(object sender, RoutedEventArgs e)
         {
-           
+            if(Data.RoomCol2App.Count > 0) lbAppartament.ItemsSource = Data.RoomCol2App;
         }
 
        
@@ -354,6 +402,8 @@ namespace LodgerBBP
         public double ExactArea { get; set; }
         public string[] TypeRoom { get; set; } = new string[] { "Жилая", "Не жилая", "Балкон(0.3)", "Лоджия(0.5)", "Терраса (0.3)" };
         public int ID { get; set; } //ID порядкового номера
+      
+        
 
         public ElementId ElementID { get; set; } //Реальный ID елемента
 

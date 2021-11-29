@@ -25,7 +25,7 @@ namespace LodgerBBP
         public ICollection<Element> AR(ExternalCommandData commandData) //Возвращаемая колекция помещений
         {
             Document doc = commandData.Application.ActiveUIDocument.Document;
-            Data.UIDOC = doc;
+            Data.ActiveDocument = doc;
             FilteredElementCollector roomFilter = new FilteredElementCollector(doc);
             ICollection<Element> allRooms = roomFilter.OfCategory(BuiltInCategory.OST_Rooms).WhereElementIsNotElementType().ToElements();
             ICE = allRooms;
@@ -102,7 +102,7 @@ namespace LodgerBBP
                     double dArea = ExactM2Area;
                     
                     if(!ExtensionHelperListView.RoomTable_.rooms.Any(x => x.Name == elements.Name)) //Перебирая элементы проверим добавили ли мы их уже в коллекцию. Если нет
-                    EHLV.AddToObserverCollection(elements.Name, dArea, ExactM2Area, selectedRoomIds.ToList(), id); //Добавляем в коллекцию и помещаем в ListView
+                    EHLV.AddToObserverCollection(elements.Name, dArea, ExactM2Area, id); //Добавляем в коллекцию и помещаем в ListView
                 }
             }
 
