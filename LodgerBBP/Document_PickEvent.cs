@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using System;
@@ -32,11 +33,15 @@ namespace LodgerBBP
             EHLV.ClearItems();
 
             UIDocument uidoc = uiapp.ActiveUIDocument;
+            Data.UIApplication = uiapp;
+            Data.ActiveUIDocument = Data.UIApplication.ActiveUIDocument;
             if (null == uidoc)
             {
                 return; // no document, nothing to do
             }
             Document doc = uidoc.Document;
+            Data.ActiveDocument = doc;
+            Data.ActiveUIDocument = uiapp.ActiveUIDocument;
             using (Transaction tx = new Transaction(doc))
             {
                 tx.Start("DocumentPickEvent");
@@ -55,9 +60,11 @@ namespace LodgerBBP
                 Selection sel = uidoc.Selection;
 
                 #region Выбор цвета https://thebuildingcoder.typepad.com/blog/2019/09/whats-new-in-the-revit-20201-api.html#2.5.1
-                Helper.SelectionColor(128,255,64,true);
-                Helper.PreselectionColor(255,0,0);
+                //Helper.SelectionColor(128,255,64,true);
+                //Helper.PreselectionColor(255,0,0);
                 #endregion
+                Helper.SelectionColor(255,10,0, true);
+                Helper.PreselectionColor(200, 0, 0);
 
                 IList<Reference> objRefsToCopy = sel.PickObjects(ObjectType.Element, "Выберите помещения для добавления в коллекцию");
                
@@ -69,23 +76,28 @@ namespace LodgerBBP
                 {
                     
                     Element element2Ref = uidoc.Document.GetElement(r.ElementId);
-                    elemIdList.Add(r.ElementId);
-                    elemList.Add(element2Ref);
-                    
-                    if (objRefsToCopy.Count != 0)
+                    if (element2Ref is Room) //Проверим наш елемент комната?
                     {
-                        Parameter par = element2Ref.get_Parameter(BuiltInParameter.ROOM_AREA);
-                        //string strArea = par.AsValueString(/*Round*/);
-                        double varDouble = par.AsDouble();
-                        double ExactM2Area = varDouble / 10.7639111056;
-                        double dArea = ExactM2Area;
-                        //EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
-                        new Helper().RoomTypeDefinition(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
-                        EHLV.AddToObserverCollection(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(), dArea, ExactM2Area, elemIdList, r.ElementId);
-                    }
+                        elemIdList.Add(r.ElementId);
+                        elemList.Add(element2Ref);
 
+                        if (objRefsToCopy.Count != 0)
+                        {
+                            Parameter par = element2Ref.get_Parameter(BuiltInParameter.ROOM_AREA);
+                            //string strArea = par.AsValueString(/*Round*/);
+                            double varDouble = par.AsDouble();
+                            double ExactM2Area = varDouble / 10.7639111056;
+                            double dArea = ExactM2Area;
+                            //EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
+                            new Helper().RoomTypeDefinition(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
+                            EHLV.AddToObserverCollection(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(), dArea, ExactM2Area, r.ElementId);
+                            Data.MinorNumberRoom.Add(Convert.ToInt32(element2Ref.get_Parameter((BuiltInParameter)292423).AsString()));
+                        }
+                    }
                     //ActDP?.Invoke(this, new Document_PickEventArgs(element2Ref.Name));
                 }
+
+                
 
                 uidoc.Selection.SetElementIds(elemIdList);
                 uidoc.ShowElements(elemIdList);

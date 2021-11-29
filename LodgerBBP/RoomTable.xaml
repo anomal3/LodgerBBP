@@ -55,15 +55,29 @@
                          Margin="402,2,0,0" 
                          VerticalAlignment="Top" 
                          Width="249"
+                         ToolTip="Двойной клик левой мыши откроет меню. Правый клик подсветит аппартаменты"
                          ItemsSource="{Binding RoomCollectionToAppartament.NameAppartament}">
+
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding NameAppartament}"></TextBlock>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+                    <!--<ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="shower" Header="Отобразить" ></MenuItem>
+                            <MenuItem Header="Удалить"></MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>-->
                 </ListBox>
                 <Button x:Name="bAddAppart" Content="Добавить в комнату" HorizontalAlignment="Left" Margin="534,107,0,0" VerticalAlignment="Top" Width="117" Height="22"/>
-                <TextBox x:Name="tbNewNameAdd" HorizontalAlignment="Left" Height="23" Margin="402,106,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="132" Background="White"/>
+                <TextBox x:Name="tbSection" HorizontalAlignment="Left" Height="23" Margin="425,106,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="25"/>
+                <TextBox x:Name="tbRoof" HorizontalAlignment="Left" Height="23" Margin="467,106,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="25"/>
+                <TextBox x:Name="tbNewNameAdd" HorizontalAlignment="Left" Height="23" Margin="509,106,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="25" Background="White"/>
+                <Label Content="№" HorizontalAlignment="Left" Margin="402,107,0,0" VerticalAlignment="Top" Height="22" Width="23"/>
+                <Label Content="-" HorizontalAlignment="Left" Margin="450,107,0,0" VerticalAlignment="Top" Height="22" Width="17"/>
+                <Label Content="-" HorizontalAlignment="Left" Margin="492,107,0,0" VerticalAlignment="Top" Width="17" Height="22"/>
+
             </Grid>
         </GroupBox>
 

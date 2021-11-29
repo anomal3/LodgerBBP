@@ -221,8 +221,9 @@ namespace LodgerBBP
     public static class Data
     {
         public static object obj { get; set; }
-        public static Document UIDOC { get; set; }
+        public static Document ActiveDocument { get; set; }
         public static UIDocument ActiveUIDocument { get; set; }
+        public static UIApplication UIApplication { get; set; }
 
         #region Версия
         public static Version AssemblyVers()
@@ -243,6 +244,7 @@ namespace LodgerBBP
         public static int iTypeRoomSlectionIndex { get; set; } //Передаваемый параметр типа помещения при заполнеии ComboBox
 
         public static readonly ObservableCollection<RoomCollectionToAppartament> RoomCol2App = new ObservableCollection<RoomCollectionToAppartament>();
+        public static List<int> MinorNumberRoom { get; set; } = new List<int>();
 
     }
     #endregion
@@ -267,8 +269,9 @@ namespace LodgerBBP
 
         #region Метод добавления выбранного в Коллекцию
         int _ID = 0;
-        public void AddToObserverCollection(string NameRoom, double dArea, double _ExactArea, List<ElementId> lei ,ElementId elemId)
+        public void AddToObserverCollection(string NameRoom, double dArea, double _ExactArea ,ElementId elemId)
         {
+           
             RoomTable_.rooms.Add(new RoomValue
             {
                 Name = NameRoom,
@@ -278,7 +281,21 @@ namespace LodgerBBP
                 ID = _ID++,
                 ElementID = elemId
             });
-            RoomTable_.c_LV.ItemsSource = RoomTable_.rooms;            
+            RoomTable_.c_LV.ItemsSource = RoomTable_.rooms;
+            
+
+            if (Data.ActiveDocument != null)
+            {
+                var CurElement = Data.ActiveDocument.GetElement(elemId);
+                RoomTable_.tbSection.Text = CurElement.get_Parameter((BuiltInParameter)292425).AsString();
+                RoomTable_.tbRoof.Text = CurElement.get_Parameter((BuiltInParameter)292394).AsString();
+                RoomTable_.tbNewNameAdd.Text = Data.MinorNumberRoom.Min().ToString();
+            }
+            else
+            {
+                MessageBox.Show("ОШИБКА ДОКУМЕНТА!\r\tПопробуйте заново открыть окно плагина! Если ошибка повторится сообщите нам об этом",
+             "Ошибка AddApartament", MessageBoxButton.OK, MessageBoxImage.Error); return;
+            }
         }
         #endregion
 
@@ -306,21 +323,48 @@ namespace LodgerBBP
         {
             List<ElementId> ElementsId = new List<ElementId>();
 
+            List<int> RoomWhereCount = new List<int>(); //Переменная для поиска скольки комнатная квартира
+
             for (int i = 0; i < lv.SelectedItems.Count; i++)
             {
                 var indexID = lv.Items.IndexOf(lv.SelectedItems[i]);
                 //MessageBox.Show(RoomTable_.rooms[indexID].Name + RoomTable_.rooms[indexID].ExactArea.ToString());
                 var AddElementId = RoomTable_.rooms.FirstOrDefault(x => x.ID == indexID); //TODO : Добавить ещё Enum с выбором типа коэф
                 ElementsId.Add(AddElementId.ElementID);
+                RoomWhereCount.Add(Data.ActiveDocument.GetElement(AddElementId.ElementID).get_Parameter((BuiltInParameter)292424).AsInteger());
             }
-
+            
+            
             Data.RoomCol2App.Add(new RoomCollectionToAppartament
             {
-                NameAppartament = _NameAppartament + $" ({ElementsId.Count} помещ.)",
+                NameAppartament = $"{RoomWhereCount.Max()}К №" + _NameAppartament + $" ({ElementsId.Count} помещ.)",
                 ElementIdList = ElementsId
             });
         }
         #endregion
+
+        public static void AppartamentSelectedShowDocument(string sNameAppartament, bool isShowDocument)
+        {
+            Helper.SelectionColor(255,0,0, true);
+            Helper.PreselectionColor(255, 0, 0);
+            Data.ActiveUIDocument.RefreshActiveView();
+            if (Data.ActiveUIDocument != null)
+            {
+                var ElementsIdList = Data.RoomCol2App.FirstOrDefault(x => x.NameAppartament == sNameAppartament).ElementIdList;
+
+                Data.ActiveUIDocument.Selection.SetElementIds(ElementsIdList);
+                if(isShowDocument) Data.ActiveUIDocument.ShowElements(ElementsIdList);
+                
+
+                //foreach (var elemId in ElementsIdList)
+                //{
+                //    var CurElement = Data.ActiveDocument.GetElement(elemId);
+                //    RoomTable_.tbSection.Text = CurElement.get_Parameter((BuiltInParameter)292425).AsString();
+                //    RoomTable_.tbRoof.Text = CurElement.get_Parameter((BuiltInParameter)292394).AsString();
+                //}
+            }
+            Helper.ColorDefault();
+        }
 
     }
     #endregion
@@ -345,5 +389,7 @@ namespace LodgerBBP
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NameAppartament)));
             }
         }
+
+       
     }
 }
