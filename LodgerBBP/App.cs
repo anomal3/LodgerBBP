@@ -29,7 +29,7 @@ namespace LodgerBBP
             //var addPToolTip = panel.AddItem(RibbonItemData.ToolTip);
 
             DateTime currentData = DateTime.Now; // Текущая дата
-            DateTime endWork = new DateTime(2021, 11, 23); // Дата окончания работы плагина
+            DateTime endWork = new DateTime(2022, 11, 23); // Дата окончания работы плагина
             TimeSpan workTime = endWork - currentData; // Время работы плагина
 
             if (workTime.Days <= 0) //Если время работы плагина истекло...
