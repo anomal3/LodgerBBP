@@ -29,6 +29,7 @@ namespace LodgerBBP
         {
             ExtensionHelperListView.ChangeTitle("Выбираем квартиры");
             ExtensionHelperListView EHLV = new ExtensionHelperListView();
+            EHLV.ClearItems();
 
             UIDocument uidoc = uiapp.ActiveUIDocument;
             if (null == uidoc)
@@ -51,15 +52,22 @@ namespace LodgerBBP
                 //while (true)
                 //{
                 #endregion
-
                 Selection sel = uidoc.Selection;
+
+                #region Выбор цвета https://thebuildingcoder.typepad.com/blog/2019/09/whats-new-in-the-revit-20201-api.html#2.5.1
+                Helper.SelectionColor(128,255,64,true);
+                Helper.PreselectionColor(255,0,0);
+                #endregion
+
                 IList<Reference> objRefsToCopy = sel.PickObjects(ObjectType.Element, "Выберите помещения для добавления в коллекцию");
+               
                 //XYZ basePoint = sel.PickPoint("Pick base point");
 
-                EHLV.ClearItems();
-
+                
+                //TaskDialog.Show("dsa", "dsada");
                 foreach (Reference r in objRefsToCopy)
                 {
+                    
                     Element element2Ref = uidoc.Document.GetElement(r.ElementId);
                     elemIdList.Add(r.ElementId);
                     elemList.Add(element2Ref);
@@ -67,11 +75,13 @@ namespace LodgerBBP
                     if (objRefsToCopy.Count != 0)
                     {
                         Parameter par = element2Ref.get_Parameter(BuiltInParameter.ROOM_AREA);
-                        string strArea = par.AsValueString(/*Round*/);
+                        //string strArea = par.AsValueString(/*Round*/);
                         double varDouble = par.AsDouble();
                         double ExactM2Area = varDouble / 10.7639111056;
-                        EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
-
+                        double dArea = ExactM2Area;
+                        //EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
+                        new Helper().RoomTypeDefinition(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
+                        EHLV.AddToObserverCollection(element2Ref.Name, dArea, ExactM2Area, elemIdList, r.ElementId);
                     }
 
                     //ActDP?.Invoke(this, new Document_PickEventArgs(element2Ref.Name));
@@ -79,6 +89,7 @@ namespace LodgerBBP
 
                 uidoc.Selection.SetElementIds(elemIdList);
                 uidoc.ShowElements(elemIdList);
+                Helper.ColorDefault();
 
                 var td = new TaskDialog("Info");                                    //Всплывающее окно
                 //td.MainInstruction = uiapp.ActiveUIDocument.Selection.GetElementIds().Aggregate("", (ss, el) => ss + "," + el).TrimStart(','); // Выводит ID выбранных пом-ий
@@ -86,7 +97,7 @@ namespace LodgerBBP
                 td.TitleAutoPrefix = false;
                 td.Show();
 
-               
+                //uidoc.Selection.SetElementIds(elemIdList); //Подсветить элементы 
                 #region Устаревший метод выбра
                 //elemIdList.Add(uidoc.Selection.PickObject(ObjectType.Element, "Выберите помещения для добавления в коллекцию").ElementId);
                 //if (elemIdList != null & elemIdList.Count != 0)
@@ -126,11 +137,15 @@ namespace LodgerBBP
                 //    td.Show();
                 //}
                 #endregion
-                //uidoc.RefreshActiveView();
+                uidoc.RefreshActiveView();
                 //===============================================//
                 tx.Commit();
+
+                ExtensionHelperListView.ChangeTitle(Data.Version()); //Возвращаем версию приложения после выбора
             }
         }
+
+      
 
         #region Смена цвета выбранного элемента [Не поддерживается]
         public void ChangeElementColor(UIApplication uiapp)

@@ -11,6 +11,9 @@ using Autodesk.Revit.DB.Architecture;
 using System.Reflection;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using System.Windows.Controls;
+using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace LodgerBBP
 {
@@ -23,7 +26,7 @@ namespace LodgerBBP
         /// </summary>
         /// <param name="img"></param>
         /// <returns></returns>
-        public static BitmapImage Convert (Image img)
+        public static BitmapImage Convert (System.Drawing.Image img)
         {
             using (var memory = new MemoryStream())
             {
@@ -45,7 +48,7 @@ namespace LodgerBBP
         /// <param name="img">Исходное изображение</param>
         /// <param name="fic">Выбор формата</param>
         /// <returns></returns>
-        public static BitmapImage Convert(Image img, FormatImageConverter fic)
+        public static BitmapImage Convert(System.Drawing.Image img, FormatImageConverter fic)
         {
             ImageFormat IF = ImageFormat.Png;
 
@@ -107,6 +110,67 @@ namespace LodgerBBP
         }
         #endregion
 
+        #region Метод определения и автоматического заполнения ComboBox типа помещения
+        /// <summary>
+        /// Метод определения и автоматического заполнения ComboBox типа помещения
+        /// </summary>
+        /// <param name="line">Входящий параметр имя комнаты</param>
+        public void RoomTypeDefinition(string line)
+        {
+            if (!string.IsNullOrEmpty(line))
+            {
+                switch (line.ToLower())
+                {
+                    case "лоджия":
+                        Data.iTypeRoomSlectionIndex = 3;
+                        break;
+                    case "балкон":
+                        Data.iTypeRoomSlectionIndex = 2;
+                        break;
+                    default:
+                        Data.iTypeRoomSlectionIndex = 0;
+                        break;
+                }
+            }
+        }
+        #endregion
+
+
+        #region Методы переопределения цветов выбора
+        /// <summary>
+        /// переопределение цвета для выделения
+        /// </summary>
+        /// <param name="red"></param>
+        /// <param name="green"></param>
+        /// <param name="blue"></param>
+        /// <param name="SelectionSemitransparent">Полупрозрачность эелемента</param>
+        public static void SelectionColor(byte red, byte green, byte blue, bool SelectionSemitransparent)
+        {
+            ColorOptions ColOp = ColorOptions.GetColorOptions();
+                ColOp.SelectionColor = new Autodesk.Revit.DB.Color(red, green, blue);
+                ColOp.SelectionSemitransparent = SelectionSemitransparent;
+        }
+        /// <summary>
+        /// Определяет цвет при наведении мыши на эелемент PreSelect
+        /// </summary>
+        /// <param name="red"></param>
+        /// <param name="green"></param>
+        /// <param name="blue"></param>
+        public static void PreselectionColor(byte red, byte green, byte blue)
+        {
+            ColorOptions ColOp = ColorOptions.GetColorOptions();
+            ColOp.PreselectionColor = new Autodesk.Revit.DB.Color(red, green, blue);
+        }
+
+        public static void ColorDefault()
+        {
+            ColorOptions ColOp = ColorOptions.GetColorOptions();
+            ColOp.SelectionColor = new Autodesk.Revit.DB.Color(0, 59, 189);
+            ColOp.PreselectionColor = new Autodesk.Revit.DB.Color(0, 59, 189);
+        }
+
+        #endregion
+
     }
 
     #region Класс HelperNaming Наименование элементов [Имя, текст, описание и т.п.]
@@ -142,6 +206,13 @@ namespace LodgerBBP
             "Проверить наличие новых обновлений",
             "Критические обновлениия могут перезапустить ревит, что может повлечь последствия"
         };
+
+        public static string[] bScheduleSheets = {
+            "bSchedule",
+            "Создать экспликацию",
+            "Создаёт экспликацию текущего вида",
+            "Перед созданием нужно будет задать имя, инчаче имя присвоится как \"Не названная экспликация (DateTime.Now)\""
+        };
     }
     #endregion
 
@@ -166,6 +237,12 @@ namespace LodgerBBP
 
         public static ICollection<Element> CollectionElements { get; set; }
 
+        public static string NameSpecificSchedule { get; set; }
+
+        public static int iTypeRoomSlectionIndex { get; set; } //Передаваемый параметр типа помещения при заполнеии ComboBox
+
+        public static readonly ObservableCollection<RoomCollectionToAppartament> RoomCol2App = new ObservableCollection<RoomCollectionToAppartament>();
+
     }
     #endregion
 
@@ -174,6 +251,7 @@ namespace LodgerBBP
     {
         public static RoomTable RoomTable_ { get; set; }
 
+        #region Устаревший метод добавления напрямую в ListView
         public void AddToList(string NameRoom, string strArea, double _ExactArea)
         {
             RoomTable_.c_LV.Items.Add(new RoomValue
@@ -184,16 +262,40 @@ namespace LodgerBBP
                 TypeRoom = new RoomValue().TypeRoom
             });
         }
+        #endregion
 
-        //TODO : Сделать метод добавления в коллекцию по аналогии с AddToList
-        public void AddToObserverCollection()
+        int _ID = 0;
+        public void AddToObserverCollection(string NameRoom, double dArea, double _ExactArea, List<ElementId> lei ,ElementId elemId)
         {
+            RoomTable_.rooms.Add(new RoomValue
+            {
+                Name = NameRoom,
+                Area = dArea,
+                ExactArea = _ExactArea,
+                TypeRoom = new string[] { "Жилая", "Не жилая", "Балкон(0.3)", "Лоджия(0.5)", "Терраса (0.3)" },
+                ID = _ID++,
+                ElementID = elemId
+            });
+            RoomTable_.c_LV.ItemsSource = RoomTable_.rooms;
 
+
+            Data.RoomCol2App.Add(new RoomCollectionToAppartament
+            {
+                Name = NameRoom,
+                ElementIdList = lei
+            });
+            
         }
+
 
         public void ClearItems()
         {
-            RoomTable_.c_LV.Items.Clear();
+            try
+            {
+                if (RoomTable_.rooms.Count > 0)
+                    RoomTable_.rooms.Clear();
+            }
+            catch { }
         }
 
         public static void ChangeTitle(string message)
@@ -202,4 +304,10 @@ namespace LodgerBBP
         }
     }
     #endregion
+
+    public class RoomCollectionToAppartament
+    {
+        public string Name { get; set; }
+        public List<ElementId> ElementIdList { get; set; } = new List<ElementId>();
+    }
 }

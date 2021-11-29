@@ -7,7 +7,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Media;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -40,8 +43,10 @@ namespace LodgerBBP
         /// <param name="isFillRoom">Заполнять сразу в ListView</param>
         public RoomTable(ICollection<Element> elements, bool isFillRoom)
         {
+            DataContext = this;
             InitializeComponent();
-           
+            IExternalEventHandler DocumentPickEvent = new Document_PickEvent();     //Обявляем новое событие выделение по кнопке
+            ExternalEvent exEvent = ExternalEvent.Create(DocumentPickEvent);        //Создадим событие класса и подпишемся на него
 
             allRooms = elements;
 
@@ -50,8 +55,6 @@ namespace LodgerBBP
             Round.UseDefault = false;                                               //Метод округления чисел по математическому принципу. Используется библиотека Revit.DB
             Round.RoundingMethod = RoundingMethod.Up;                               //
 
-            IExternalEventHandler DocumentPickEvent = new Document_PickEvent();     //Обявляем новое событие выделение по кнопке
-            ExternalEvent exEvent = ExternalEvent.Create(DocumentPickEvent);        //Создадим событие класса и подпишемся на него
 
             this.Title += Data.Version();
 
@@ -61,7 +64,16 @@ namespace LodgerBBP
                 SlMathRound.IsEnabled = (bool)chkMath.IsChecked & c_LV.SelectedItems.Count >= 1 ? true : false;
             };
 
-            bSelectPick.Click += (s, a) => { exEvent.Raise(); };                    /*Событие когда мы выбираем помещения мышкой*/
+            bSelectPick.Click += (s, a) => {
+               
+                exEvent.Raise(); 
+            };                    /*Событие когда мы выбираем помещения мышкой*/
+
+
+            bSelectPick.MouseEnter += MouseEnterButtonSound;
+            bUpdateList.MouseEnter += MouseEnterButtonSound;
+            bSum.MouseEnter += MouseEnterButtonSound;
+            
 
             #region Выполняем когда форма загружена
             this.Loaded += (s, e) => {
@@ -99,15 +111,18 @@ namespace LodgerBBP
                 
                 if (isFillRoom)
                 {
+                    new Helper().RoomTypeDefinition(room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
+
                     #region Новый метод добавления в коллекцию goto:c_LV.ItemsSource = rooms;
-                    rooms.Add(new RoomValue 
+                    rooms.Add(new RoomValue
                     {
-                        Name = room.Name,
+                        Name = room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(),
                         Area = ExactM2Area,
                         ExactArea = ExactM2Area,
-                        TypeRoom = new string[] { "Без коэф.", "Балкон ^0.3", "Лоджия ^0.5" },
+                        TypeRoom = new RoomValue().TypeRoom,
                         ID = _ID++
                     });
+                    
                     #endregion
 
                     #region Устаревший и не правильный метод добавления элементов в ListView
@@ -126,12 +141,29 @@ namespace LodgerBBP
                     //Добавляем коллекцию комнат в List
 
                 }
-                c_LV.ItemsSource = rooms;
+               c_LV.ItemsSource = rooms;
+
             }
 
             #endregion
+
+            bAddAppart.Click += (s, a) => {
+                var FocusItem = (FrameworkElement)a.OriginalSource; //Получаем элемент строки в зависимости на какой ComboBox мы тыкнули
+                var focusItem = (RoomValue)FocusItem.DataContext;  //Получаем коллекцию вышеполученного элемента
+                var fobj = rooms.Where(x => x.ID == focusItem.ID).FirstOrDefault();
+                MessageBox.Show(fobj.Name);
+            };
         }
 
+
+        #region Метод вопсроизведения звука при наведении мыша на кнопку
+        private void MouseEnterButtonSound(object s, MouseEventArgs e)
+        {
+            using (MemoryStream fileOut = new MemoryStream(Properties.Resources.MouseEnterElement))
+            using (GZipStream gz = new GZipStream(fileOut, CompressionMode.Decompress))
+                new SoundPlayer(gz).Play();
+        }
+        #endregion
         /// <summary>
         /// Происходит при изменении ComboBox
         /// </summary>
@@ -139,33 +171,45 @@ namespace LodgerBBP
         /// <param name="e"></param>
         private void cbTypeRoom_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var comboBox = (ComboBox)e.OriginalSource; //Получаем тыкнутый мышкой ComboBox
-
-            var FocusItem = (FrameworkElement)e.OriginalSource; //Получаем элемент строки в зависимости на какой ComboBox мы тыкнули
-            var focusItem = (RoomValue)FocusItem.DataContext;  //Получаем коллекцию вышеполученного элемента
             
-            var findObj = rooms.FirstOrDefault(x => x.ID == focusItem.ID); //Ищем наш объект для изменений в коллекции по условию ID который мы фокусим и ID который нужно изменить
-            var OldArea = findObj.ExactArea;
-
-            //TODO : Сделать повышающий коэфициент. Чтобы при выборе обратно площадь вернулась в исходное значение
-            if (findObj != null)
-            {
-                switch(comboBox.SelectedIndex)
+                try
                 {
-                    case 0:
-                        findObj.AREA = OldArea;
-                        break;
-                    case 1:
-                        //Балкон *.3
-                        findObj.AREA = OldArea * 0.3;
-                        break;
-                    case 2:
-                        //Лоджия *.5
-                        findObj.AREA = OldArea * 0.5;
-                        break;
+                    var comboBox = e.OriginalSource as ComboBox; //Получаем тыкнутый мышкой ComboBox
+
+                    var FocusItem = (FrameworkElement)e.OriginalSource; //Получаем элемент строки в зависимости на какой ComboBox мы тыкнули
+
+                    var focusItem = (RoomValue)FocusItem.DataContext;  //Получаем коллекцию вышеполученного элемента
+
+                    var fobj = rooms.Where(x => x.ID == focusItem.ID).FirstOrDefault();
+                    //var findObj = rooms.FirstOrDefault(x => x.ID == focusItem.ID); //Ищем наш объект для изменений в коллекции по условию ID который мы фокусим и ID который нужно изменить
+                    var OldArea = fobj.ExactArea;
+
+                    //TODO : Сделать повышающий коэфициент. Чтобы при выборе обратно площадь вернулась в исходное значение
+                    if (fobj != null)
+                    {
+                        switch (comboBox.SelectedIndex)
+                        {
+                            case 2:
+                                //Балкон *.3
+                                fobj.AREA = OldArea * 0.3;
+                                break;
+                            case 4:
+                                //Терраса *.3
+                                fobj.AREA = OldArea * 0.3;
+                                break;
+                            case 3:
+                                //Лоджия *.5
+                                fobj.AREA = OldArea * 0.5;
+                                break;
+                            default:
+                                fobj.AREA = OldArea;
+                                break;
+                        }
+
+                    }
                 }
-               
-            }    
+                catch (Exception ex) {  }
+            
         }
 
 
@@ -187,8 +231,7 @@ namespace LodgerBBP
         {
             foreach (var item in lv.Items)
             {
-                var SelectedComboBox = (item as RoomValue).Coeff;
-                TaskDialog.Show("istins", SelectedComboBox.ToString());
+                
             }
         }
 #endif
@@ -239,6 +282,7 @@ namespace LodgerBBP
         {
             
         }
+
     }
 
     /// <summary>
@@ -246,11 +290,20 @@ namespace LodgerBBP
     /// </summary>
     public class RoomValue : INotifyPropertyChanged
     {
-        public string Name { get; set; }
+        public RoomValue() //Конструктор для того чтобы установить по-умолчанию значение коэф.
+        {
+            if(Data.iTypeRoomSlectionIndex >= -1)
+                SelectedIndex = Data.iTypeRoomSlectionIndex;
+        }
+        public string Name { get; set; } //Имя помещения
         public double Area { get; set; }
         public double ExactArea { get; set; }
-        public string[] TypeRoom { get; set; } = new string[] { };
-        public int ID { get; set; }
+        public string[] TypeRoom { get; set; } = new string[] { "Жилая", "Не жилая", "Балкон(0.3)", "Лоджия(0.5)", "Терраса (0.3)" };
+        public int ID { get; set; } //ID порядкового номера
+
+        public ElementId ElementID { get; set; } //Реальный ID елемента
+
+        public ComboBox cbRoomType { get; set; } = new ComboBox();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -274,7 +327,21 @@ namespace LodgerBBP
             set { Area = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AREA))); }
         }
 
-
+       
+        private int _selectedIndex;
+        public int SelectedIndex
+        {
+            get
+            {
+                return _selectedIndex;
+            }
+            set
+            {
+                _selectedIndex = value;
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("SelectedIndex"));
+            }
+        }
         //public System.Windows.Controls.ComboBox TypeRoom { get; set; } = new System.Windows.Controls.ComboBox();
         //public ComboBox TypeRoom { get; set; }
 
