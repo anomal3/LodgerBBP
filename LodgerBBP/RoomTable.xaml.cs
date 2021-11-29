@@ -227,7 +227,7 @@ namespace LodgerBBP
                     //var findObj = rooms.FirstOrDefault(x => x.ID == focusItem.ID); //Ищем наш объект для изменений в коллекции по условию ID который мы фокусим и ID который нужно изменить
                     var OldArea = fobj.ExactArea;
 
-                    //TODO : Сделать повышающий коэфициент. Чтобы при выборе обратно площадь вернулась в исходное значение
+                    
                     if (fobj != null)
                     {
                         switch (comboBox.SelectedIndex)

@@ -310,7 +310,7 @@ namespace LodgerBBP
             {
                 var indexID = lv.Items.IndexOf(lv.SelectedItems[i]);
                 //MessageBox.Show(RoomTable_.rooms[indexID].Name + RoomTable_.rooms[indexID].ExactArea.ToString());
-                var AddElementId = RoomTable_.rooms.FirstOrDefault(x => x.ID == indexID);
+                var AddElementId = RoomTable_.rooms.FirstOrDefault(x => x.ID == indexID); //TODO : Добавить ещё Enum с выбором типа коэф
                 ElementsId.Add(AddElementId.ElementID);
             }
 
