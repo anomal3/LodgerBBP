@@ -164,6 +164,8 @@ namespace LodgerBBP
             b1.ToolTip = HelperNaming.bBugReport[(int)Helper.UINamingArray.TOOLTIP];
             b1.LongDescription = HelperNaming.bBugReport[(int)Helper.UINamingArray.DISCRIPTION];
 
+#warning Новый токен
+            //NOTE : Токен закладки. 
             Image procUpdate = Properties.Resources.update;
             ImageSource _procUpdate = Helper.Convert(procUpdate, Helper.FormatImageConverter.PNG);
 
@@ -175,6 +177,7 @@ namespace LodgerBBP
             bUpdate.LargeImage = _procUpdate;
             bUpdate.ToolTip = HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.TOOLTIP];
             bUpdate.LongDescription = HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.DISCRIPTION];
+            //BUG : Кнопка обновить
 
 
             panel.AddItem(b1);
