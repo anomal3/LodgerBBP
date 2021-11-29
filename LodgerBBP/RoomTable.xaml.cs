@@ -13,6 +13,7 @@ using System.Linq;
 using System.Media;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -45,12 +46,24 @@ namespace LodgerBBP
         {
             DataContext = this;
             InitializeComponent();
+
+            
             IExternalEventHandler DocumentPickEvent = new Document_PickEvent();     //Обявляем новое событие выделение по кнопке
             ExternalEvent exEvent = ExternalEvent.Create(DocumentPickEvent);        //Создадим событие класса и подпишемся на него
 
             allRooms = elements;
 
-            
+            this.Loaded += RoomTable_Loaded;
+
+            tbNewNameAdd.Loaded += (s, a) => {
+                tbNewNameAdd.Foreground = new SolidColorBrush(Colors.Gray);
+                tbNewNameAdd.FontStyle = FontStyles.Italic;
+                tbNewNameAdd.Text = "Название квартиры...";
+            };                                   //
+
+            tbNewNameAdd.GotFocus += RemoveText;                                   //Метод с текстовым полем 
+            tbNewNameAdd.LostFocus += AddText;                                     //
+
             FormatOptions Round = new FormatOptions();                              //
             Round.UseDefault = false;                                               //Метод округления чисел по математическому принципу. Используется библиотека Revit.DB
             Round.RoundingMethod = RoundingMethod.Up;                               //
@@ -148,13 +161,43 @@ namespace LodgerBBP
             #endregion
 
             bAddAppart.Click += (s, a) => {
-                var FocusItem = (FrameworkElement)a.OriginalSource; //Получаем элемент строки в зависимости на какой ComboBox мы тыкнули
-                var focusItem = (RoomValue)FocusItem.DataContext;  //Получаем коллекцию вышеполученного элемента
-                var fobj = rooms.Where(x => x.ID == focusItem.ID).FirstOrDefault();
-                MessageBox.Show(fobj.Name);
+                ExtensionHelperListView.AddAppartament(c_LV, tbNewNameAdd.Text);
+                lbAppartament.ItemsSource = Data.RoomCol2App;
+                tbNewNameAdd.Text = "Название квартиры...";
             };
+
         }
 
+
+        #region Placeholder текстового поля названия новой квартиры
+        public void RemoveText(object sender, EventArgs e)
+        {
+            tbNewNameAdd.Foreground = new SolidColorBrush(Colors.Black);
+            tbNewNameAdd.FontStyle = FontStyles.Normal;
+
+            if (tbNewNameAdd.Text == "Название квартиры...")
+            {
+                tbNewNameAdd.Text = "";
+            }
+        }
+       
+
+        public void AddText(object sender, EventArgs e)
+        {
+            tbNewNameAdd.Foreground = new SolidColorBrush(Colors.Gray);
+            tbNewNameAdd.FontStyle = FontStyles.Italic;
+
+            if (string.IsNullOrWhiteSpace(tbNewNameAdd.Text))
+                tbNewNameAdd.Text = "Название квартиры...";
+        }
+        #endregion
+
+        private void RoomTable_Loaded(object sender, RoutedEventArgs e)
+        {
+           
+        }
+
+       
 
         #region Метод вопсроизведения звука при наведении мыша на кнопку
         private void MouseEnterButtonSound(object s, MouseEventArgs e)
@@ -229,10 +272,13 @@ namespace LodgerBBP
         /// <param name="lv"></param>
         void TestSum(ListView lv)
         {
-            foreach (var item in lv.Items)
+            for(int i = 0; i < lv.SelectedItems.Count; i++)
             {
-                
+                var to2 = lv.Items.IndexOf(lv.SelectedItems[i]);
+                MessageBox.Show(rooms[to2].Name + rooms[to2].ExactArea.ToString());
             }
+            
+            
         }
 #endif
 
@@ -292,9 +338,17 @@ namespace LodgerBBP
     {
         public RoomValue() //Конструктор для того чтобы установить по-умолчанию значение коэф.
         {
-            if(Data.iTypeRoomSlectionIndex >= -1)
+            if (Data.iTypeRoomSlectionIndex >= -1)
                 SelectedIndex = Data.iTypeRoomSlectionIndex;
         }
+
+        public RoomValue(RoomCollectionToAppartament _roomCollectionToAppartament)
+        {
+            this.RoomCollectionToAppartament = _roomCollectionToAppartament;
+        }
+
+        public RoomCollectionToAppartament RoomCollectionToAppartament { get;set;}
+
         public string Name { get; set; } //Имя помещения
         public double Area { get; set; }
         public double ExactArea { get; set; }
@@ -342,6 +396,8 @@ namespace LodgerBBP
                     PropertyChanged(this, new PropertyChangedEventArgs("SelectedIndex"));
             }
         }
+
+      
         //public System.Windows.Controls.ComboBox TypeRoom { get; set; } = new System.Windows.Controls.ComboBox();
         //public ComboBox TypeRoom { get; set; }
 

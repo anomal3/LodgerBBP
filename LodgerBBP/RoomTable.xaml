@@ -11,7 +11,7 @@
         <local:RoomValue/>
     </Window.DataContext>
     <Grid Margin="0,0,2,0" >
-        <ListView x:Name="c_LV" Margin="0,0,0,220">
+        <ListView x:Name="c_LV" Margin="0,0,0,281">
             <ListView.View>
                 <GridView AllowsColumnReorder="true"  ColumnHeaderToolTip="Столбцы можно перемещать мышью для удобства!">
                     <GridViewColumn Header="#" DisplayMemberBinding="{Binding ID}" Width="35"/>
@@ -41,16 +41,29 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <GroupBox Header="Настройки" Margin="10,0,10,55" Height="160" VerticalAlignment="Bottom" >
-            <Grid Height="137" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="661" >
+        <GroupBox Header="Настройки" Margin="10,0,10,55" Height="221" VerticalAlignment="Bottom" >
+            <Grid Height="191" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="661" >
                 <CheckBox Content="Округлять до знака" x:Name="chkMath" Margin="0,4,520,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="126"/>
-                <TextBox x:Name="tbSelectArea" Height="23" TextWrapping="Wrap" Text="0" HorizontalAlignment="Left" Width="188" Margin="193,2,0,112"/>
+                <TextBox x:Name="tbSelectArea" Height="23" TextWrapping="Wrap" Text="0" HorizontalAlignment="Left" Width="188" Margin="193,26,0,0" VerticalAlignment="Top"/>
                 <Label x:Name="SliderCount" Content="Label" HorizontalAlignment="Right" Margin="0,70,610,0" VerticalAlignment="Top"/>
-                <CheckBox x:Name="chkTopMost" Content="Закрепить на перднем плане" HorizontalAlignment="Left" Margin="193,37,0,0" VerticalAlignment="Top" Width="188"/>
-                <Slider x:Name="SlMathRound" Maximum="3" SmallChange="1" ValueChanged="SlMathRound_ValueChanged" IsSnapToTickEnabled="True" TickFrequency="1" IsEnabled="False" Margin="15,38,578,81"/>
-                <Label x:Name="lbMathRound" Content="0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" IsEnabled="False" RenderTransformOrigin="0.594,0.558" Margin="0,31,545,0"/>
-                <ListBox x:Name="lbAppartament" HorizontalAlignment="Left" Height="105" Margin="402,2,0,0" VerticalAlignment="Top" Width="249"/>
-                <Button x:Name="bAddAppart" Content="Добавить комнату" HorizontalAlignment="Left" Margin="545,112,0,0" VerticalAlignment="Top" Width="106"/>
+                <CheckBox x:Name="chkTopMost" Content="Закрепить на перднем плане" HorizontalAlignment="Left" Margin="0,176,0,0" VerticalAlignment="Top" Width="188"/>
+                <Slider x:Name="SlMathRound" Maximum="3" SmallChange="1" ValueChanged="SlMathRound_ValueChanged" IsSnapToTickEnabled="True" TickFrequency="1" IsEnabled="False" Margin="15,26,578,93"/>
+                <Label x:Name="lbMathRound" Content="0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" IsEnabled="False" RenderTransformOrigin="0.594,0.558" Margin="0,22,543,0"/>
+                <ListBox x:Name="lbAppartament"
+                         HorizontalAlignment="Left"
+                         Height="105" 
+                         Margin="402,2,0,0" 
+                         VerticalAlignment="Top" 
+                         Width="249"
+                         ItemsSource="{Binding RoomCollectionToAppartament.NameAppartament}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding NameAppartament}"></TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button x:Name="bAddAppart" Content="Добавить в комнату" HorizontalAlignment="Left" Margin="534,107,0,0" VerticalAlignment="Top" Width="117" Height="22"/>
+                <TextBox x:Name="tbNewNameAdd" HorizontalAlignment="Left" Height="23" Margin="402,106,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="132" Background="White"/>
             </Grid>
         </GroupBox>
 

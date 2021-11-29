@@ -81,7 +81,7 @@ namespace LodgerBBP
                         double dArea = ExactM2Area;
                         //EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
                         new Helper().RoomTypeDefinition(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
-                        EHLV.AddToObserverCollection(element2Ref.Name, dArea, ExactM2Area, elemIdList, r.ElementId);
+                        EHLV.AddToObserverCollection(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(), dArea, ExactM2Area, elemIdList, r.ElementId);
                     }
 
                     //ActDP?.Invoke(this, new Document_PickEventArgs(element2Ref.Name));
