@@ -190,16 +190,25 @@ namespace LodgerBBP
                         {
                             //Добавляем контекстное меню
                             MenuItem ShowRoom = new MenuItem();
-                            ShowRoom.Header = $"Отобразить";
+                            ShowRoom.Header = $"Отобразить на плане";
                             ShowRoom.Click += (@sender, @event) => { ExtensionHelperListView.AppartamentSelectedShowDocument(focusItem.NameAppartament, true); };
 
                             MenuItem DelRoom = new MenuItem();
                             DelRoom.Header = "Удалить";
                             DelRoom.Click += (@sender, @event) => { Data.RoomCol2App.Remove(Data.RoomCol2App.FirstOrDefault(x => x.NameAppartament == focusItem.NameAppartament)); };
 
+                            MenuItem ShowReturn = new MenuItem();
+                            ShowReturn.Header = "Распаковать";
+                            ShowReturn.Click += (@sender, @event) => {
+                                var list = Data.RoomCol2App.FirstOrDefault().ElementIdList;
+                                new ExtensionHelperListView().AddToObserverCollection(list);
+                                Data.RoomCol2App.Remove(Data.RoomCol2App.FirstOrDefault(x => x.NameAppartament == focusItem.NameAppartament)); //Удаляем из списка комнат
+                            };
+
                             ContextMenu cm = new ContextMenu();
                             cm.Items.Add(ShowRoom);
                             cm.Items.Add(DelRoom);
+                            cm.Items.Add(ShowReturn);
                             cm.IsOpen = true;
                         }
                         else
@@ -407,7 +416,6 @@ namespace LodgerBBP
 
         public ElementId ElementID { get; set; } //Реальный ID елемента
 
-        public ComboBox cbRoomType { get; set; } = new ComboBox();
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -151,6 +151,7 @@ namespace LodgerBBP
         {
             string assembly = Assembly.GetExecutingAssembly().Location;
 
+            #region Кнопка БАГОРЕПОРТ
             panel.AddSlideOut();
             Image bugRep = Properties.Resources.bug;
             ImageSource _bugRep = Helper.Convert(bugRep, Helper.FormatImageConverter.PNG);
@@ -159,13 +160,13 @@ namespace LodgerBBP
             PushButtonData b1 = new PushButtonData(HelperNaming.bBugReport[(int)Helper.UINamingArray.NAME], 
                                                    HelperNaming.bBugReport[(int)Helper.UINamingArray.TEXT], 
                                                    assembly,
-                                                   "LodgerBBP.SchelVent"); //Какой класс будет вызываться по нажатию
+                                                   new MarkerStamp().ClassName); //Какой класс будет вызываться по нажатию
             b1.LargeImage = _bugRep;
             b1.ToolTip = HelperNaming.bBugReport[(int)Helper.UINamingArray.TOOLTIP];
             b1.LongDescription = HelperNaming.bBugReport[(int)Helper.UINamingArray.DISCRIPTION];
+            #endregion
 
-#warning Новый токен
-            //NOTE : Токен закладки. 
+            #region Кнопка обновить
             Image procUpdate = Properties.Resources.update;
             ImageSource _procUpdate = Helper.Convert(procUpdate, Helper.FormatImageConverter.PNG);
 
@@ -177,12 +178,27 @@ namespace LodgerBBP
             bUpdate.LargeImage = _procUpdate;
             bUpdate.ToolTip = HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.TOOLTIP];
             bUpdate.LongDescription = HelperNaming.bProcessUpdate[(int)Helper.UINamingArray.DISCRIPTION];
-            //BUG : Кнопка обновить
+            #endregion
 
+            #region Кнопка добавления общих параметров
+            Image imgSharedParameter = Properties.Resources.application_form;
+            ImageSource _imgSharedParameter = Helper.Convert(imgSharedParameter, Helper.FormatImageConverter.PNG);
+
+            // create some controls for the slide out
+            PushButtonData bSharParameter = new PushButtonData(HelperNaming.bShredParam[(int)Helper.UINamingArray.NAME],
+                                                   HelperNaming.bShredParam[(int)Helper.UINamingArray.TEXT],
+                                                   assembly,
+                                                   new Utility.SharedParameters().ClassName);
+            bSharParameter.LargeImage = _imgSharedParameter;
+            bSharParameter.ToolTip = HelperNaming.bShredParam[(int)Helper.UINamingArray.TOOLTIP];
+            bSharParameter.LongDescription = HelperNaming.bShredParam[(int)Helper.UINamingArray.DISCRIPTION];
+            #endregion
 
             panel.AddItem(b1);
             panel.AddSeparator();
             panel.AddItem(bUpdate);
+            panel.AddSeparator();
+            panel.AddItem(bSharParameter);
         }
         #endregion
 

@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using LodgerBBP.Utility;
 
 namespace LodgerBBP
 {
@@ -214,6 +215,13 @@ namespace LodgerBBP
             "Создаёт экспликацию текущего вида",
             "Перед созданием нужно будет задать имя, инчаче имя присвоится как \"Не названная экспликация (DateTime.Now)\""
         };
+
+        public static string[] bShredParam = {
+            "bShredParameter",
+            "Общие параметры",
+            "Добавляет общие параметры в проект",
+            "Будут добавлены общие параметры из файла \"X:\\BIM-Хранилище\\PSKPlugins\\StrParameters.txt\" в текущий проект\r\tСемейства не изменятся"
+        };
     }
     #endregion
 
@@ -269,7 +277,7 @@ namespace LodgerBBP
 
         #region Метод добавления выбранного в Коллекцию
         int _ID = 0;
-        public void AddToObserverCollection(string NameRoom, double dArea, double _ExactArea ,ElementId elemId)
+        public void AddToObserverCollection(string NameRoom, double dArea, double _ExactArea ,ElementId elemId, UIDocument uidoc)
         {
            
             RoomTable_.rooms.Add(new RoomValue
@@ -277,26 +285,58 @@ namespace LodgerBBP
                 Name = NameRoom,
                 Area = dArea,
                 ExactArea = _ExactArea,
-                TypeRoom = new string[] { "Жилая", "Не жилая", "Балкон(0.3)", "Лоджия(0.5)", "Терраса (0.3)" },
+                TypeRoom = new RoomValue().TypeRoom ,
                 ID = _ID++,
                 ElementID = elemId
             });
             RoomTable_.c_LV.ItemsSource = RoomTable_.rooms;
-            
+
 
             if (Data.ActiveDocument != null)
             {
-                var CurElement = Data.ActiveDocument.GetElement(elemId);
+                var CurElement = uidoc.Document.GetElement(elemId);
                 RoomTable_.tbSection.Text = CurElement.get_Parameter((BuiltInParameter)292425).AsString();
                 RoomTable_.tbRoof.Text = CurElement.get_Parameter((BuiltInParameter)292394).AsString();
-                RoomTable_.tbNewNameAdd.Text = Data.MinorNumberRoom.Min().ToString();
+                Data.MinorNumberRoom.Add(Convert.ToInt32(CurElement.get_Parameter((BuiltInParameter)292423).AsString()));
+                RoomTable_.tbNewNameAdd.Text = string.Format("{0}", Data.MinorNumberRoom);
             }
             else
             {
                 MessageBox.Show("ОШИБКА ДОКУМЕНТА!\r\tПопробуйте заново открыть окно плагина! Если ошибка повторится сообщите нам об этом",
              "Ошибка AddApartament", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
+            RoomTable_.tbNewNameAdd.Text = string.Format("{0}", Data.MinorNumberRoom.Min());
+           // _ID = 0; //NOTRUN : Не проверен сброс ID
         }
+
+        #region Тот же метод с перегрузкой без объявления квартир
+        public void AddToObserverCollection(List<ElementId> _ElementsIdList)
+        {
+            foreach(var ElementId in _ElementsIdList)
+            {
+                Element element= Data.ActiveUIDocument.Document.GetElement(ElementId);
+                Parameter par = element.get_Parameter(BuiltInParameter.ROOM_AREA);
+                double varDouble = par.AsDouble();
+                double ExactM2Area = varDouble / 10.7639111056;
+                double dArea = ExactM2Area;
+                new Helper().RoomTypeDefinition(element.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
+                RoomTable_.rooms.Add(new RoomValue
+                {
+                    Name = element.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(),
+                    Area = dArea,
+                    ExactArea = ExactM2Area,
+                    TypeRoom = new RoomValue().TypeRoom,
+                    ID = _ID++,
+                    ElementID = ElementId
+                });
+            }
+           
+            RoomTable_.c_LV.ItemsSource = RoomTable_.rooms;
+
+            //_ID = 0; //NOTRUN : Не проверен сброс ID
+        }
+        #endregion
+
         #endregion
 
         #region Метод очистки колекции а следом и ListView Items
@@ -329,7 +369,7 @@ namespace LodgerBBP
             {
                 var indexID = lv.Items.IndexOf(lv.SelectedItems[i]);
                 //MessageBox.Show(RoomTable_.rooms[indexID].Name + RoomTable_.rooms[indexID].ExactArea.ToString());
-                var AddElementId = RoomTable_.rooms.FirstOrDefault(x => x.ID == indexID); //TODO : Добавить ещё Enum с выбором типа коэф
+                var AddElementId = RoomTable_.rooms.FirstOrDefault(x => x.ID == indexID); 
                 ElementsId.Add(AddElementId.ElementID);
                 RoomWhereCount.Add(Data.ActiveDocument.GetElement(AddElementId.ElementID).get_Parameter((BuiltInParameter)292424).AsInteger());
             }
@@ -340,10 +380,15 @@ namespace LodgerBBP
                 NameAppartament = $"{RoomWhereCount.Max()}К №" + _NameAppartament + $" ({ElementsId.Count} помещ.)",
                 ElementIdList = ElementsId
             });
+
+            string IndexRoom = $"№" + _NameAppartament + $"-{Data.MinorNumberRoom.Min()}";
+
+            EditSharedParameter.Edit_PSKPlugin_Parameter(IndexRoom);
+            //TODO : Заполнить параметры PSKPlugins
         }
         #endregion
 
-        public static void AppartamentSelectedShowDocument(string sNameAppartament, bool isShowDocument)
+        public static void AppartamentSelectedShowDocument(string sNameAppartament, bool isShowDocument) //Отображаем выделенный документ
         {
             Helper.SelectionColor(255,0,0, true);
             Helper.PreselectionColor(255, 0, 0);
@@ -374,6 +419,9 @@ namespace LodgerBBP
         //public string NameAppartament { get; set; } //Имя квартиры
         public List<ElementId> ElementIdList { get; set; } = new List<ElementId>(); //ID к которые принадлежат добавленно квартире
 
+        public double Area { get; set; }
+        public double ExactArea { get; set; }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         string name_appartament;
@@ -392,4 +440,5 @@ namespace LodgerBBP
 
        
     }
+
 }

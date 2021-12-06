@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace LodgerBBP
 {
@@ -97,6 +98,8 @@ namespace LodgerBBP
             Transaction t = new Transaction(document, "Create Schedules");
             t.Start();
 
+            List<string> polya = new List<string>();
+            List<ViewSchedule> lvs = new List<ViewSchedule>();
             //IList<ElementId> categories = new List<ElementId>;
             //categories.Add(new ElementId(BuiltInCategory.OST_DuctCurves));
             //categories.Add(new ElementId(BuiltInCategory.OST_DuctFitting));
@@ -143,14 +146,26 @@ namespace LodgerBBP
             #endregion
 
             ViewSchedule schedule = ViewSchedule.CreateSchedule(document, new ElementId(BuiltInCategory.OST_Rooms), ElementId.InvalidElementId);
-            schedule.Name = Data.NameSpecificSchedule;
+            schedule.Name = Data.NameSpecificSchedule; // schedule сама спецификация
+            lvs.Add(schedule);
             foreach (SchedulableField schedulableField in schedule.Definition.GetSchedulableFields()) //Проходимся по полям и добавляем что нужно в спецификацию
             {
                 //TaskDialog.Show("tester", schedulableField.FieldType.ToString());
-                ScheduleField field = schedule.Definition.AddField(schedulableField);
+                //ScheduleField field = schedule.Definition.AddField(schedulableField);
+                if(schedulableField.GetName(document) == "Комментарии")
+                {
+                    ScheduleField field = schedule.Definition.AddField(schedulableField);
+                    MessageBox.Show("FOund " + schedulableField.GetName(document));
+                    field.ColumnHeading = "МОЙ КОМЕНТ";
+
+                    //schedule.Definition.InsertField(schedulableField, 0);
+                    AddFieldToSchedule(lvs);
+                    
+                }
+                polya.Add(schedulableField.GetName(document));
                 
             }
-
+            MessageBox.Show(string.Join("_____", polya.ToArray()), "");
             t.Commit();
 
             uiDocument.ActiveView = schedule;
@@ -170,6 +185,60 @@ namespace LodgerBBP
             return false;
         }
 
-      
+        /// <summary>
+        /// Add fields to view schedule.
+        /// </summary>
+        /// <param name="schedules">List of view schedule.</param>
+        public void AddFieldToSchedule(List<ViewSchedule> schedules)
+        {
+            IList<SchedulableField> schedulableFields = null;
+
+            foreach (ViewSchedule vs in schedules)
+            {
+                //Get all schedulable fields from view schedule definition.
+                schedulableFields = vs.Definition.GetSchedulableFields();
+
+                foreach (SchedulableField sf in schedulableFields)
+                {
+                    bool fieldAlreadyAdded = false;
+                    //Get all schedule field ids
+                    IList<ScheduleFieldId> ids = vs.Definition.GetFieldOrder();
+                    foreach (ScheduleFieldId id in ids)
+                    {
+                        //If the GetSchedulableField() method of gotten schedule field returns same schedulable field,
+                        // it means the field is already added to the view schedule.
+                        if (vs.Definition.GetField(id).GetSchedulableField() == sf)
+                        {
+                            fieldAlreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    //If schedulable field doesn't exist in view schedule, add it.
+                    if (fieldAlreadyAdded == false)
+                    {
+                        vs.Definition.AddField(sf);
+                    }
+                }
+            }
+        }
+
+        // format length units to display in feet and inches format
+        public void FormatLengthFields(ViewSchedule schedule)
+        {
+            int nFields = schedule.Definition.GetFieldCount();
+            for (int n = 0; n < nFields; n++)
+            {
+                ScheduleField field = schedule.Definition.GetField(n);
+                if (field.GetSpecTypeId() == SpecTypeId.Length)
+                {
+                    FormatOptions formatOpts = new FormatOptions();
+                    formatOpts.UseDefault = false;
+                    formatOpts.DisplayUnits = DisplayUnitType.DUT_FEET_FRACTIONAL_INCHES;
+                    field.SetFormatOptions(formatOpts);
+                }
+            }
+        }
+
     }
 }

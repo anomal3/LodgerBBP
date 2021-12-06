@@ -4,11 +4,13 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
+using LodgerBBP.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LodgerBBP
 {
@@ -17,7 +19,7 @@ namespace LodgerBBP
     public class Document_PickEvent : IExternalEventHandler
     {
         public Document doc;
-        public Application RevitApp;
+        public Autodesk.Revit.ApplicationServices.Application RevitApp;
 
         #region События для передачи [не используется]
         public delegate void ActionDocumentPick(object sender, Document_PickEventArgs e);
@@ -28,6 +30,7 @@ namespace LodgerBBP
 
         public void Execute(UIApplication uiapp)
         {
+            //new MsgBox("Простое кастомное окно для вызова", "Это будет заголовок", MsgBox.MsgBoxIcon.Info, MsgBox.MsgBoxButton.OK).Show();
             ExtensionHelperListView.ChangeTitle("Выбираем квартиры");
             ExtensionHelperListView EHLV = new ExtensionHelperListView();
             EHLV.ClearItems();
@@ -42,6 +45,9 @@ namespace LodgerBBP
             Document doc = uidoc.Document;
             Data.ActiveDocument = doc;
             Data.ActiveUIDocument = uiapp.ActiveUIDocument;
+
+            Autodesk.Revit.ApplicationServices.Application app = uiapp.ActiveUIDocument.Application.Application;
+            
             using (Transaction tx = new Transaction(doc))
             {
                 tx.Start("DocumentPickEvent");
@@ -67,16 +73,15 @@ namespace LodgerBBP
                 Helper.PreselectionColor(200, 0, 0);
 
                 IList<Reference> objRefsToCopy = sel.PickObjects(ObjectType.Element, "Выберите помещения для добавления в коллекцию");
-               
+
                 //XYZ basePoint = sel.PickPoint("Pick base point");
 
-                
                 //TaskDialog.Show("dsa", "dsada");
                 foreach (Reference r in objRefsToCopy)
                 {
                     
                     Element element2Ref = uidoc.Document.GetElement(r.ElementId);
-                    if (element2Ref is Room) //Проверим наш елемент комната?
+                    if (element2Ref is Room)
                     {
                         elemIdList.Add(r.ElementId);
                         elemList.Add(element2Ref);
@@ -90,10 +95,14 @@ namespace LodgerBBP
                             double dArea = ExactM2Area;
                             //EHLV.AddToList(element2Ref.Name, strArea, ExactM2Area);
                             new Helper().RoomTypeDefinition(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
-                            EHLV.AddToObserverCollection(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(), dArea, ExactM2Area, r.ElementId);
-                            Data.MinorNumberRoom.Add(Convert.ToInt32(element2Ref.get_Parameter((BuiltInParameter)292423).AsString()));
+                            EHLV.AddToObserverCollection(element2Ref.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(), dArea, ExactM2Area, r.ElementId, uidoc);
+                            // Data.MinorNumberRoom.Add(Convert.ToInt32(element2Ref.get_Parameter((BuiltInParameter)292423).AsString()));
+                            //Parameter IndexRoom = element2Ref.get_Parameter((BuiltInParameter)392429);
+                            //IndexRoom.Set("ПРОСТО НАФИГ ИНДЕКС");
+
                         }
                     }
+                    
                     //ActDP?.Invoke(this, new Document_PickEventArgs(element2Ref.Name));
                 }
 
@@ -140,7 +149,7 @@ namespace LodgerBBP
                 //{
                 //    uidoc.Selection.SetElementIds(elemIdList);
 
-                //    //TODO : В собитии передаём комнату
+                //    
 
                 //    var td = new TaskDialog("Info");                                    //Всплывающее окно
                 //    //td.MainInstruction = uiapp.ActiveUIDocument.Selection.GetElementIds().Aggregate("", (ss, el) => ss + "," + el).TrimStart(','); // Выводит ID выбранных пом-ий
@@ -162,7 +171,7 @@ namespace LodgerBBP
         #region Смена цвета выбранного элемента [Не поддерживается]
         public void ChangeElementColor(UIApplication uiapp)
         {
-            Application app = uiapp.ActiveUIDocument.Application.Application;
+            Autodesk.Revit.ApplicationServices.Application app = uiapp.ActiveUIDocument.Application.Application;
 
             UIDocument uidoc = uiapp.ActiveUIDocument;
             Document doc = uidoc.Document;

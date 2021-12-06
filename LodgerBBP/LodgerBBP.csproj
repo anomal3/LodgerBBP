@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Command.cs" />
+    <Compile Include="Utility\CreateSharedParameter.cs" />
     <Compile Include="Document_PickEvent.cs" />
     <Compile Include="Document_Selection.cs" />
     <Compile Include="Forms\MsgBox.cs">
@@ -79,6 +80,7 @@
       <DependentUpon>MsgBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper.cs" />
+    <Compile Include="MarkerStamp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -89,6 +91,8 @@
       <DependentUpon>RoomTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="SchelVent.cs" />
+    <Compile Include="Utility\EditSharedParameter.cs" />
+    <Compile Include="Utility\SharedParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LodgerBBP.addin" />
@@ -102,6 +106,12 @@
     <None Include="Resources\document_valid.png" />
     <None Include="Resources\MouseEnterElement.wav" />
     <None Include="Resources\69880c1f5e57698.mp3" />
+    <None Include="Resources\msgbox_error.png" />
+    <None Include="Resources\msgbox_info.png" />
+    <None Include="Resources\msgbox_question.png" />
+    <None Include="Resources\msgbox_warn.png" />
+    <None Include="Resources\active_sessions.png" />
+    <None Include="Resources\application_form.png" />
     <Content Include="scr\AdWindows.dll" />
     <Content Include="scr\RevitAPI.dll" />
     <Content Include="scr\RevitAPI.xml" />

@@ -59,8 +59,8 @@ namespace LodgerBBP
                         info += "\n\t" + id.IntegerValue;
                         ChangeSelection(uidoc);
 
-                        //Открываем таблицу и заносим все данные
-                        //TODO :
+                        
+                        
                     }
                     
                     TaskDialog.Show("RevitInf", $"Было добавлено {ExtensionHelperListView.RoomTable_.rooms.Count} помещений\r\t{info}");
@@ -102,7 +102,7 @@ namespace LodgerBBP
                     double dArea = ExactM2Area;
                     
                     if(!ExtensionHelperListView.RoomTable_.rooms.Any(x => x.Name == elements.Name)) //Перебирая элементы проверим добавили ли мы их уже в коллекцию. Если нет
-                    EHLV.AddToObserverCollection(elements.Name, dArea, ExactM2Area, id); //Добавляем в коллекцию и помещаем в ListView
+                    EHLV.AddToObserverCollection(elements.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(), dArea, ExactM2Area, id, uidoc); //Добавляем в коллекцию и помещаем в ListView
                 }
             }
 
