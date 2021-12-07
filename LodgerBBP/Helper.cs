@@ -212,7 +212,7 @@ namespace LodgerBBP
         public static string[] bScheduleSheets = {
             "bSchedule",
             "Создать экспликацию",
-            "Создаёт экспликацию текущего вида",
+            "Создаёт экспликацию только тех помещений которые были объеденены в квартиру.",
             "Перед созданием нужно будет задать имя, инчаче имя присвоится как \"Не названная экспликация (DateTime.Now)\""
         };
 
@@ -254,6 +254,14 @@ namespace LodgerBBP
         public static readonly ObservableCollection<RoomCollectionToAppartament> RoomCol2App = new ObservableCollection<RoomCollectionToAppartament>();
         public static List<int> MinorNumberRoom { get; set; } = new List<int>();
 
+        public static void ClearMinorNumRoom()
+        {
+            MinorNumberRoom.Clear();
+        }
+
+
+        public static int ExactAreaCount { get; set; } = 6; 
+
     }
     #endregion
 
@@ -294,11 +302,12 @@ namespace LodgerBBP
 
             if (Data.ActiveDocument != null)
             {
+                
                 var CurElement = uidoc.Document.GetElement(elemId);
                 RoomTable_.tbSection.Text = CurElement.get_Parameter((BuiltInParameter)292425).AsString();
                 RoomTable_.tbRoof.Text = CurElement.get_Parameter((BuiltInParameter)292394).AsString();
                 Data.MinorNumberRoom.Add(Convert.ToInt32(CurElement.get_Parameter((BuiltInParameter)292423).AsString()));
-                RoomTable_.tbNewNameAdd.Text = string.Format("{0}", Data.MinorNumberRoom);
+                //RoomTable_.tbNewNameAdd.Text = string.Format("{0}", Data.MinorNumberRoom);
             }
             else
             {
@@ -306,7 +315,8 @@ namespace LodgerBBP
              "Ошибка AddApartament", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
             RoomTable_.tbNewNameAdd.Text = string.Format("{0}", Data.MinorNumberRoom.Min());
-           // _ID = 0; //NOTRUN : Не проверен сброс ID
+            
+            // _ID = 0; //NOTRUN : Не проверен сброс ID
         }
 
         #region Тот же метод с перегрузкой без объявления квартир
@@ -384,7 +394,7 @@ namespace LodgerBBP
             string IndexRoom = $"№" + _NameAppartament + $"-{Data.MinorNumberRoom.Min()}";
 
             EditSharedParameter.Edit_PSKPlugin_Parameter(IndexRoom);
-            //TODO : Заполнить параметры PSKPlugins
+            Data.ClearMinorNumRoom();
         }
         #endregion
 
@@ -440,5 +450,8 @@ namespace LodgerBBP
 
        
     }
+
+
+   
 
 }

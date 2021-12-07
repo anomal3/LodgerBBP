@@ -100,13 +100,9 @@ namespace LodgerBBP
 
             List<string> polya = new List<string>();
             List<ViewSchedule> lvs = new List<ViewSchedule>();
-            //IList<ElementId> categories = new List<ElementId>;
-            //categories.Add(new ElementId(BuiltInCategory.OST_DuctCurves));
-            //categories.Add(new ElementId(BuiltInCategory.OST_DuctFitting));
-            //categories.Add(new ElementId(BuiltInCategory.OST_DuctAccessory));
-            //categories.Add(new ElementId(BuiltInCategory.OST_DuctTerminal));
-            //categories.Add(new ElementId(BuiltInCategory.OST_MechanicalEquipment));
-            //categories.Add(new ElementId(BuiltInCategory.OST_FlexDuctCurves));
+           
+
+
             #region Форма для ввода пользователем Названия листа спецификации
 
             NF = new System.Windows.Forms.Form(); //Инициируем нашу форму ввода
@@ -142,30 +138,95 @@ namespace LodgerBBP
             NF.Controls.Add(tbName);  //Добавляем кнотролы к инициированной форме
             NF.Controls.Add(btn);
             NF.Controls.Add(lbl);
+            //NF.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;//
             NF.ShowDialog(); //Открываем форму в виде диалога чтобы не спряталось где нибудь
             #endregion
 
             ViewSchedule schedule = ViewSchedule.CreateSchedule(document, new ElementId(BuiltInCategory.OST_Rooms), ElementId.InvalidElementId);
+            
             schedule.Name = Data.NameSpecificSchedule; // schedule сама спецификация
             lvs.Add(schedule);
             foreach (SchedulableField schedulableField in schedule.Definition.GetSchedulableFields()) //Проходимся по полям и добавляем что нужно в спецификацию
             {
                 //TaskDialog.Show("tester", schedulableField.FieldType.ToString());
                 //ScheduleField field = schedule.Definition.AddField(schedulableField);
-                if(schedulableField.GetName(document) == "Комментарии")
+
+                if (schedulableField.GetName(document) == "Индекс квартиры")
                 {
                     ScheduleField field = schedule.Definition.AddField(schedulableField);
-                    MessageBox.Show("FOund " + schedulableField.GetName(document));
-                    field.ColumnHeading = "МОЙ КОМЕНТ";
+                    field.ColumnHeading = "Индекс квартиры";
+                    field.SheetColumnWidth = .1d;
 
-                    //schedule.Definition.InsertField(schedulableField, 0);
-                    AddFieldToSchedule(lvs);
-                    
+                    field.HorizontalAlignment = ScheduleHorizontalAlignment.Center;
+                    schedule.Definition.AddFilter(new ScheduleFilter(field.FieldId, ScheduleFilterType.HasValue));
+
+                    /*ield.Definition.SetFieldOrder(ListschedulableFields);*/
+                    //schedule.Definition.SetFilter(0, new ScheduleFilter(field.FieldId, ScheduleFilterType.HasValue));
                 }
+
+                if (schedulableField.GetName(document) == "ADSK_Площадь квартиры")
+                {
+                    ScheduleField field = schedule.Definition.AddField(schedulableField);
+                    field.ColumnHeading = "Площадь квартиры";
+                    field.SheetColumnWidth = .14d;
+
+                    field.HorizontalAlignment = ScheduleHorizontalAlignment.Center;
+                    var Filter = new ScheduleFilter(field.FieldId, ScheduleFilterType.HasValue);
+                    schedule.Definition.AddFilter(Filter);
+                }
+                //else { schedule.Definition.RemoveField(); }
+
+
+                if (schedulableField.GetName(document) == "Все помещения")
+                {
+                    ScheduleField field = schedule.Definition.AddField(schedulableField);
+                    field.ColumnHeading = "Площадь всех помещений";
+                    field.SheetColumnWidth = .14d;
+                    var Filter = new ScheduleFilter(field.FieldId, ScheduleFilterType.HasValue);
+                    schedule.Definition.AddFilter(Filter);
+                    field.HorizontalAlignment = ScheduleHorizontalAlignment.Center;
+                }
+
+                if (schedulableField.GetName(document) == "Все помещения без лоджий и балконов")
+                {
+                    ScheduleField field = schedule.Definition.AddField(schedulableField);
+                    field.ColumnHeading = "Все помещения без лоджий и балконов";
+
+                    field.SheetColumnWidth = .14d;
+                    var Filter = new ScheduleFilter(field.FieldId, ScheduleFilterType.HasValue);
+                    schedule.Definition.AddFilter(Filter);
+                    field.HorizontalAlignment = ScheduleHorizontalAlignment.Center;
+                }
+                
+                if (schedulableField.GetName(document) == "Все помещения с коэф")
+                {
+                    ScheduleField field = schedule.Definition.AddField(schedulableField);
+                    field.ColumnHeading = "Все помещения с коэф";
+                    field.SheetColumnWidth = .1d;
+                    field.HorizontalAlignment = ScheduleHorizontalAlignment.Center;
+                    schedule.Definition.AddFilter(new ScheduleFilter(field.FieldId, ScheduleFilterType.HasValue));
+                }
+                
+                if (schedulableField.GetName(document) == "Жилая площадь")
+                {
+                    ScheduleField field = schedule.Definition.AddField(schedulableField);
+                    field.ColumnHeading = "Жилая площадь";
+                    field.SheetColumnWidth = .1d;
+                    field.HorizontalAlignment = ScheduleHorizontalAlignment.Center;
+                    schedule.Definition.AddFilter(new ScheduleFilter(field.FieldId, ScheduleFilterType.HasValue));
+                   
+                }
+                //else
+                //{
+
+                //}
+
                 polya.Add(schedulableField.GetName(document));
                 
             }
-            MessageBox.Show(string.Join("_____", polya.ToArray()), "");
+            //AddFieldToSchedule(lvs);
+            
+            MessageBox.Show("Все найденные параметры\r\n" + string.Join("_", polya.ToArray()), "");
             t.Commit();
 
             uiDocument.ActiveView = schedule;

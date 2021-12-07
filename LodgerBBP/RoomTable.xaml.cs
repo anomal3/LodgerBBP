@@ -42,7 +42,7 @@ namespace LodgerBBP
         /// </summary>
         /// <param name="elements">Коллекция комнат</param>
         /// <param name="isFillRoom">Заполнять сразу в ListView</param>
-        public RoomTable(ICollection<Element> elements, bool isFillRoom)
+        public RoomTable(/*ICollection<Element> elements,*/ bool isFillRoom)
         {
             DataContext = this;
             InitializeComponent();
@@ -51,7 +51,7 @@ namespace LodgerBBP
             IExternalEventHandler DocumentPickEvent = new Document_PickEvent();     //Обявляем новое событие выделение по кнопке
             ExternalEvent exEvent = ExternalEvent.Create(DocumentPickEvent);        //Создадим событие класса и подпишемся на него
 
-            allRooms = elements;
+            //allRooms = elements;
 
             this.Loaded += RoomTable_Loaded;
 
@@ -111,53 +111,53 @@ namespace LodgerBBP
             bSum.Click += BSum_Aera;                                                //Метод который суммирует выбранные помещения
 
 
-            #region При инициализации формы
+            #region При инициализации формы [Больше не используется]
 
             //TaskDialog.Show("Area Calculator", "Вот это поворот", TaskDialogCommonButtons.Close, TaskDialogResult.Close);
-            int _ID = 0;
-            foreach (var room in allRooms)                                          //Цикл перебора коллекций комнат
-            {
-                Parameter par = room.get_Parameter(BuiltInParameter.ROOM_AREA);     //Объявляем параметр и указываем что будем брать (какой параметр) из комнат
+            //int _ID = 0;
+            //foreach (var room in allRooms)                                          //Цикл перебора коллекций комнат
+            //{
+            //    Parameter par = room.get_Parameter(BuiltInParameter.ROOM_AREA);     //Объявляем параметр и указываем что будем брать (какой параметр) из комнат
 
-                string strArea = par.AsValueString(/*Round*/);                      //
-                double varDouble = par.AsDouble();                                  //Вычисление прощади
-                double ExactM2Area = varDouble / 10.7639111056;                     //
+            //    string strArea = par.AsValueString(/*Round*/);                      //
+            //    double varDouble = par.AsDouble();                                  //Вычисление прощади
+            //    double ExactM2Area = varDouble / 10.7639111056;                     //
                 
-                if (isFillRoom)
-                {
-                    new Helper().RoomTypeDefinition(room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
+            //    if (isFillRoom)
+            //    {
+            //        //new Helper().RoomTypeDefinition(room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
 
-                    #region Новый метод добавления в коллекцию goto:c_LV.ItemsSource = rooms;
-                    rooms.Add(new RoomValue
-                    {
-                        Name = room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(),
-                        Area = ExactM2Area,
-                        ExactArea = ExactM2Area,
-                        TypeRoom = new RoomValue().TypeRoom,
-                        ID = _ID++
-                    });
+            //        #region Новый метод добавления в коллекцию goto:c_LV.ItemsSource = rooms;
+            //        rooms.Add(new RoomValue
+            //        {
+            //            Name = room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString(),
+            //            Area = ExactM2Area,
+            //            ExactArea = ExactM2Area,
+            //            TypeRoom = new RoomValue().TypeRoom,
+            //            ID = _ID++
+            //        });
                     
-                    #endregion
+            //        #endregion
 
-                    #region Устаревший и не правильный метод добавления элементов в ListView
-                    //c_LV.Items.Add(new RoomValue                                        //Заносим в ListView наши полученные данные из комнат
-                    //{
-                    //    Name = room.Name,
-                    //    Area = ExactM2Area,
-                    //    ExactArea = ExactM2Area,
-                    //    TypeRoom = new RoomValue().TypeRoom,
-                    //    Title = new RoomValue().Title
-                    //});
-                    #endregion
-                }
-                else
-                {
-                    //Добавляем коллекцию комнат в List
+            //        #region Устаревший и не правильный метод добавления элементов в ListView
+            //        //c_LV.Items.Add(new RoomValue                                        //Заносим в ListView наши полученные данные из комнат
+            //        //{
+            //        //    Name = room.Name,
+            //        //    Area = ExactM2Area,
+            //        //    ExactArea = ExactM2Area,
+            //        //    TypeRoom = new RoomValue().TypeRoom,
+            //        //    Title = new RoomValue().Title
+            //        //});
+            //        #endregion
+            //    }
+            //    else
+            //    {
+            //        //Добавляем коллекцию комнат в List
 
-                }
-               c_LV.ItemsSource = rooms;
+            //    }
+            //   c_LV.ItemsSource = rooms;
 
-            }
+            //}
 
             #endregion
 
@@ -379,6 +379,7 @@ namespace LodgerBBP
             lbMathRound.Content = e.NewValue.ToString();
             double ExactSumMath = Math.Round(Convert.ToDouble(OldValue), (int)e.NewValue); //Округление проходит до двух знаков. сделать до 3
             tbSelectArea.Text = ExactSumMath.ToString();
+            Data.ExactAreaCount = (int)e.NewValue;
         }
 
         private void c_LV_SelectionChanged(object sender, SelectionChangedEventArgs e)

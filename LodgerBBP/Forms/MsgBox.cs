@@ -92,7 +92,7 @@ namespace LodgerBBP.Forms
                 case MsgBoxButton.OK:
                     bOkYes.Visible = true;
                     bOkYes.Text = "OK";
-                    bOkYes.Location = new Point(418, 189);
+                    bOkYes.Location = new Point(416, 164);
                 break;
                 case MsgBoxButton.YesNo:
                     bOkYes.Visible = true;

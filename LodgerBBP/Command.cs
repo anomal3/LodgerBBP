@@ -41,40 +41,46 @@ namespace LodgerBBP
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            //UIApplication uiapp = commandData.Application;
-            //UIDocument uidoc = uiapp.ActiveUIDocument;
-            //Application app = uiapp.Application;
-            //Document doc = uidoc.Document;
+            UIApplication uiapp = commandData.Application;
+            UIDocument uidoc = uiapp.ActiveUIDocument;
+            Application app = uiapp.Application;
+            Document doc = uidoc.Document;
 
-            //// Access current selection
+            // Access current selection
 
-            //Selection sel = uidoc.Selection;
+            Selection sel = uidoc.Selection;
 
-            //// Retrieve elements from database
+            // Retrieve elements from database
 
-            //FilteredElementCollector col
-            //  = new FilteredElementCollector(doc)
-            //    .WhereElementIsNotElementType()
-            //    .OfCategory(BuiltInCategory.INVALID)
-            //    .OfClass(typeof(Wall));
+            FilteredElementCollector col
+              = new FilteredElementCollector(doc)
+                .WhereElementIsNotElementType()
+                .OfCategory(BuiltInCategory.INVALID)
+                .OfClass(typeof(Wall));
 
-            //// Filtered element collector is iterable
+            // Filtered element collector is iterable
 
-            //foreach (Element e in col)
-            //{
-            //    Debug.Print(e.Name);
-            //}
+            foreach (Element e in col)
+            {
+                Debug.Print(e.Name);
+            }
 
-            //// Modify document within a transaction
+            // Modify document within a transaction
 
-            //using (Transaction tx = new Transaction(doc))
-            //{
-            //    tx.Start("Transaction Name");
-            //    tx.Commit();
-            //}
+            using (Transaction tx = new Transaction(doc))
+            {
+                tx.Start("Transaction Name");
+                RoomTable uwr = new RoomTable(false);
+                uwr.Show();
+                tx.Commit();
+            }
 
-            RoomTable uwr = new RoomTable(AR(commandData), false);
-            uwr.Show();
+            //RoomTable uwr = new RoomTable(AR(commandData), false);
+            //uwr.Show();
+
+
+            
+            
             return Result.Succeeded;
         }
     }

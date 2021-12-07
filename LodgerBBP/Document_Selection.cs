@@ -33,7 +33,7 @@ namespace LodgerBBP
         }
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            RoomTable uwr = new RoomTable(AR(commandData), false);
+            RoomTable uwr = new RoomTable(/*AR(commandData), */false);
             uwr.Show();
             try
             {

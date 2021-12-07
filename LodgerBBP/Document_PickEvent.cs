@@ -26,6 +26,7 @@ namespace LodgerBBP
         public event ActionDocumentPick ActDP;
         #endregion
 
+        
 
 
         public void Execute(UIApplication uiapp)
@@ -85,6 +86,15 @@ namespace LodgerBBP
                     {
                         elemIdList.Add(r.ElementId);
                         elemList.Add(element2Ref);
+                        
+                        if(element2Ref.get_Parameter((BuiltInParameter)392421) == null)
+                        {
+                            new MsgBox("\r\nОбщие параметры не загружены.\r\n" +
+                                "Пожалуйста нажмите на кнопку дополнительно и нажмите \"Общие параметры\"", "Ошибка загрузки",
+                                MsgBox.MsgBoxIcon.Error, MsgBox.MsgBoxButton.OK).ShowDialog();
+                            ExtensionHelperListView.RoomTable_.Close();
+                            
+                        }
 
                         if (objRefsToCopy.Count != 0)
                         {
@@ -102,7 +112,7 @@ namespace LodgerBBP
 
                         }
                     }
-                    
+                   
                     //ActDP?.Invoke(this, new Document_PickEventArgs(element2Ref.Name));
                 }
 
@@ -112,12 +122,13 @@ namespace LodgerBBP
                 uidoc.ShowElements(elemIdList);
                 Helper.ColorDefault();
 
-                var td = new TaskDialog("Info");                                    //Всплывающее окно
-                //td.MainInstruction = uiapp.ActiveUIDocument.Selection.GetElementIds().Aggregate("", (ss, el) => ss + "," + el).TrimStart(','); // Выводит ID выбранных пом-ий
-                td.MainInstruction = $" Добавлено {objRefsToCopy.Count} помещения!";
-                td.TitleAutoPrefix = false;
-                td.Show();
-
+              
+                    var td = new TaskDialog("Info");                                    //Всплывающее окно
+                    //td.MainInstruction = uiapp.ActiveUIDocument.Selection.GetElementIds().Aggregate("", (ss, el) => ss + "," + el).TrimStart(','); // Выводит ID выбранных пом-ий
+                    td.MainInstruction = $" Добавлено {objRefsToCopy.Count} помещения!";
+                    td.TitleAutoPrefix = false;
+                    td.Show();
+                
                 //uidoc.Selection.SetElementIds(elemIdList); //Подсветить элементы 
                 #region Устаревший метод выбра
                 //elemIdList.Add(uidoc.Selection.PickObject(ObjectType.Element, "Выберите помещения для добавления в коллекцию").ElementId);
@@ -159,10 +170,12 @@ namespace LodgerBBP
                 //}
                 #endregion
                 uidoc.RefreshActiveView();
+                
                 //===============================================//
                 tx.Commit();
 
                 ExtensionHelperListView.ChangeTitle(Data.Version()); //Возвращаем версию приложения после выбора
+                
             }
         }
 

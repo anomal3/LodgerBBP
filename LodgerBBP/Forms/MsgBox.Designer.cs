@@ -36,21 +36,26 @@ namespace LodgerBBP.Forms
             this.bNoCancel = new System.Windows.Forms.Button();
             this.bOkYes = new System.Windows.Forms.Button();
             this.cImage = new System.Windows.Forms.PictureBox();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cImage)).BeginInit();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbMsg
             // 
-            this.tbMsg.BackColor = System.Drawing.SystemColors.Window;
+            this.tbMsg.BackColor = System.Drawing.SystemColors.Control;
             this.tbMsg.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tbMsg.Font = new System.Drawing.Font("Microsoft JhengHei", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbMsg.ForeColor = System.Drawing.SystemColors.Highlight;
             this.tbMsg.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.tbMsg.Location = new System.Drawing.Point(93, 30);
+            this.tbMsg.Location = new System.Drawing.Point(84, 3);
             this.tbMsg.Multiline = true;
             this.tbMsg.Name = "tbMsg";
             this.tbMsg.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbMsg.Size = new System.Drawing.Size(400, 153);
+            this.tbMsg.Size = new System.Drawing.Size(414, 153);
             this.tbMsg.TabIndex = 0;
+            this.tbMsg.Text = "Было добавлено 12 помещений. Теперь вы можете с ними работать";
             // 
             // panel1
             // 
@@ -75,9 +80,9 @@ namespace LodgerBBP.Forms
             // 
             // bRetry
             // 
-            this.bRetry.BackColor = System.Drawing.SystemColors.Window;
+            this.bRetry.BackColor = System.Drawing.SystemColors.Control;
             this.bRetry.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bRetry.Location = new System.Drawing.Point(256, 189);
+            this.bRetry.Location = new System.Drawing.Point(254, 164);
             this.bRetry.Name = "bRetry";
             this.bRetry.Size = new System.Drawing.Size(75, 23);
             this.bRetry.TabIndex = 3;
@@ -87,9 +92,9 @@ namespace LodgerBBP.Forms
             // 
             // bNoCancel
             // 
-            this.bNoCancel.BackColor = System.Drawing.SystemColors.Window;
+            this.bNoCancel.BackColor = System.Drawing.SystemColors.Control;
             this.bNoCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bNoCancel.Location = new System.Drawing.Point(418, 189);
+            this.bNoCancel.Location = new System.Drawing.Point(416, 164);
             this.bNoCancel.Name = "bNoCancel";
             this.bNoCancel.Size = new System.Drawing.Size(75, 23);
             this.bNoCancel.TabIndex = 4;
@@ -99,9 +104,9 @@ namespace LodgerBBP.Forms
             // 
             // bOkYes
             // 
-            this.bOkYes.BackColor = System.Drawing.SystemColors.Window;
+            this.bOkYes.BackColor = System.Drawing.SystemColors.Control;
             this.bOkYes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bOkYes.Location = new System.Drawing.Point(337, 189);
+            this.bOkYes.Location = new System.Drawing.Point(335, 164);
             this.bOkYes.Name = "bOkYes";
             this.bOkYes.Size = new System.Drawing.Size(75, 23);
             this.bOkYes.TabIndex = 5;
@@ -114,31 +119,43 @@ namespace LodgerBBP.Forms
             this.cImage.BackgroundImage = global::LodgerBBP.Properties.Resources.msgbox_info;
             this.cImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.cImage.ErrorImage = null;
-            this.cImage.Location = new System.Drawing.Point(12, 30);
+            this.cImage.Location = new System.Drawing.Point(3, 3);
             this.cImage.Name = "cImage";
             this.cImage.Size = new System.Drawing.Size(75, 75);
             this.cImage.TabIndex = 1;
             this.cImage.TabStop = false;
             // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.panel2.Controls.Add(this.cImage);
+            this.panel2.Controls.Add(this.bNoCancel);
+            this.panel2.Controls.Add(this.bOkYes);
+            this.panel2.Controls.Add(this.tbMsg);
+            this.panel2.Controls.Add(this.bRetry);
+            this.panel2.Location = new System.Drawing.Point(2, 25);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(500, 198);
+            this.panel2.TabIndex = 6;
+            // 
             // MsgBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Window;
+            this.BackColor = System.Drawing.Color.OrangeRed;
             this.ClientSize = new System.Drawing.Size(505, 224);
-            this.Controls.Add(this.bOkYes);
-            this.Controls.Add(this.bNoCancel);
-            this.Controls.Add(this.bRetry);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.cImage);
-            this.Controls.Add(this.tbMsg);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "MsgBox";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MsgBox";
+            this.TopMost = true;
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.cImage)).EndInit();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -151,5 +168,6 @@ namespace LodgerBBP.Forms
         private System.Windows.Forms.Button bRetry;
         private System.Windows.Forms.Button bNoCancel;
         private System.Windows.Forms.Button bOkYes;
+        private System.Windows.Forms.Panel panel2;
     }
 }

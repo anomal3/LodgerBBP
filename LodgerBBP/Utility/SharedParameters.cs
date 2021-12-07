@@ -33,6 +33,8 @@ namespace LodgerBBP.Utility
                     break;
             }
 
+            
+
             return isSucceeded ? Result.Succeeded : Result.Failed;
         }
 

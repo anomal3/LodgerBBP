@@ -18,6 +18,7 @@ namespace LodgerBBP
 {
     class App : IExternalApplication
     {
+        protected PushButton SelectedRoomnBnt;
         public Result OnStartup(UIControlledApplication a)
         {
             string tabName = "ПСК ЛИК Plugins";
@@ -106,7 +107,9 @@ namespace LodgerBBP
             //Выводим короткую подсказку о кнопке
             AddBtnSelectedRoom.ToolTip = HelperNaming.SelectedTableRoom[(int)Helper.UINamingArray.TOOLTIP];
             //Обявляем кнопку и помещаем её в группу
-            var SelectedRoomnBnt = gr1.AddPushButton(AddBtnSelectedRoom) as PushButton;
+            //var SelectedRoomnBnt = gr1.AddPushButton(AddBtnSelectedRoom) as PushButton;
+            SelectedRoomnBnt = gr1.AddPushButton(AddBtnSelectedRoom) as PushButton;
+            SelectedRoomnBnt.Enabled = false;
 
             //Добавляем картинку на кнопку для визуала
             Image bImgSelectedRoom = Properties.Resources.s2_add_96;
@@ -225,10 +228,30 @@ namespace LodgerBBP
         }
         #endregion
 
+        #region Метод включения выключения кнопок
+
+       
+        #endregion
+
         public Result OnShutdown(UIControlledApplication a)
         {
             return Result.Succeeded;
         }
 
+    }
+
+    class PushButtonEnable : IExternalCommandAvailability
+    {
+        public bool IsCommandAvailable(UIApplication applicationData, CategorySet selectedCategories)
+        {
+            UIDocument uidoc = applicationData.ActiveUIDocument;
+            Document famDoc = uidoc.Document;
+            // Only enabled this control in the self-adaptive family
+            if (famDoc != null && !AdaptiveComponentFamilyUtils.IsAdaptiveComponentFamily(famDoc.OwnerFamily))
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
